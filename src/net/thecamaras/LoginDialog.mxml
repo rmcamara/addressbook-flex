@@ -6,8 +6,8 @@
     
     <mx:Script>
         <![CDATA[
-            import net.thecamaras.User;
-        
+            import mx.controls.Alert;
+
             private function initLogin():void {
                 username.addEventListener(Event.CHANGE, enableLogin);
                 password.addEventListener(Event.CHANGE, enableLogin);
@@ -23,9 +23,9 @@
                 }
             }
             
-            var user:User;
+            
             private function authenticate(): void {
-                user = new User(username.text, password.text);
+                
             }
         ]]>
     </mx:Script>

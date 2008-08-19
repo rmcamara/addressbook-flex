@@ -10,6 +10,18 @@
             font-size:"20";
         }
     </mx:Style>
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+                        
+            public function authenticate(): void {
+                Alert.show("Ready to login", "alert" );
+            }
+            
+        ]]>
+    </mx:Script>
+    
     <mx:Panel title="Camara Family Address Book"
         titleStyleName="titleStyle"
         width="800" 
