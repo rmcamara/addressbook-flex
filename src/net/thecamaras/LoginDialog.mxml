@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    horizontalAlign="center" 
+    creationComplete="initLogin()">
+    
+    <mx:Script>
+        <![CDATA[
+            import net.thecamaras.User;
+        
+            private function initLogin():void {
+                username.addEventListener(Event.CHANGE, enableLogin);
+                password.addEventListener(Event.CHANGE, enableLogin);
+            }
+            
+            private function enableLogin(e:Event): void {
+                if (username.text != null && username.text.length > 0 && 
+                    password.text != null && password.text.length > 0){
+                    login.enabled=true;
+                }
+                else{
+                    login.enabled=false;
+                }
+            }
+            
+            var user:User;
+            private function authenticate(): void {
+                user = new User(username.text, password.text);
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Text text="Welcome" fontSize="40" paddingTop="20" />
+    <mx:Form verticalGap="10" indicatorGap="10" textAlign="left">
+        <mx:FormHeading label="Please Login" /> 
+        <mx:FormItem label="Username" >
+            <mx:TextInput id="username" />
+        </mx:FormItem>
+        <mx:FormItem label="Password">
+            <mx:TextInput id="password" displayAsPassword="true" />
+        </mx:FormItem>
+        <mx:FormItem>
+            <mx:Button id="login" label="Login" enabled="false" click="authenticate()"/>
+        </mx:FormItem>
+    </mx:Form>
+    
+    <mx:StringValidator source="{username}" minLength="1" property="text"/>
+    <mx:StringValidator source="{password}" minLength="1" property="text"/>
+</mx:VBox>

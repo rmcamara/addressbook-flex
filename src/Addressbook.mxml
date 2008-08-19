@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:camara="net.thecamaras.*"
+    layout="vertical"
+    backgroundColor="white">
+    
+    <mx:Style>
+        .titleStyle {
+            font-size:"20";
+        }
+    </mx:Style>
+    <mx:Panel title="Camara Family Address Book"
+        titleStyleName="titleStyle"
+        width="800" 
+        height="500"
+        textAlign="center"
+        horizontalAlign="center">
+        <camara:LoginDialog />
+    </mx:Panel>    
+</mx:Application>
