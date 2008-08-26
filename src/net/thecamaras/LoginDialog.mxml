@@ -6,6 +6,10 @@
     
     <mx:Script>
         <![CDATA[
+            import mx.events.DynamicEvent;
+            public static const EVENT_AUTHENTICATED:String = "authentication";
+        
+            import mx.rpc.events.ResultEvent;
             import mx.controls.Alert;
 
             private function initLogin():void {
@@ -23,15 +27,26 @@
                 }
             }
             
-            
             private function authenticate(): void {
+                User.instance = new User(username.text, password.text);
+                Connection.instance.send("login.php", User.instance, updateText);
+            }
+            
+            private function updateText(result:XML): void {
+                if (result.text() != true)
+                {
+                    loginMsg.text = "Authentication failed. Please try again.";
+                    return;
+                }
                 
+                User.instance.authenticated = true;
+                this.dispatchEvent(new DynamicEvent(EVENT_AUTHENTICATED));
             }
         ]]>
     </mx:Script>
     
     <mx:Text text="Welcome" fontSize="40" paddingTop="20" />
-    <mx:Form verticalGap="10" indicatorGap="10" textAlign="left">
+    <mx:Form verticalGap="10" indicatorGap="10" textAlign="left" paddingTop="60">
         <mx:FormHeading label="Please Login" /> 
         <mx:FormItem label="Username" >
             <mx:TextInput id="username" />
@@ -43,7 +58,7 @@
             <mx:Button id="login" label="Login" enabled="false" click="authenticate()"/>
         </mx:FormItem>
     </mx:Form>
-    
+    <mx:Label id="loginMsg" width="600" color="red"/>    
     <mx:StringValidator source="{username}" minLength="1" property="text"/>
     <mx:StringValidator source="{password}" minLength="1" property="text"/>
 </mx:VBox>

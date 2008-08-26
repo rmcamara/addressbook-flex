@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TabNavigator 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    horizontalAlign="left" 
+    creationComplete="init()">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.events.DynamicEvent;
+            public static const EVENT_AUTHENTICATED:String = "authentication";
+        
+            import mx.rpc.events.ResultEvent;
+            import mx.controls.Alert;
+
+            private function init():void {
+            }
+        ]]>
+    </mx:Script>
+    <mx:VBox height="100%" width="100%" label="Address List">
+        <mx:HBox width="100%" height="32" verticalAlign="middle">
+            <mx:Label text="Name:" width="75" textAlign="right"/>
+            <mx:TextInput borderStyle="outset" borderColor="#000000" id="nameTxt" width="200"/>
+            <mx:Button label="Search" id="search"/>
+        </mx:HBox>
+        <mx:AdvancedDataGrid id="addressee" designViewDataType="tree" width="100%">
+            <mx:columns>
+                <mx:AdvancedDataGridColumn headerText="Name" dataField="col1" width="60"/>
+                <mx:AdvancedDataGridColumn headerText="City" dataField="col2" width="30"/>
+                <mx:AdvancedDataGridColumn headerText="State" dataField="col3" width="10"/>
+            </mx:columns>
+        </mx:AdvancedDataGrid>
+    </mx:VBox>
+</mx:TabNavigator>

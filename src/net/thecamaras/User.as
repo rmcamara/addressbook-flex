@@ -2,27 +2,26 @@ package net.thecamaras
 {
     public class User
     {
-        private var user:String;
-        private var pass:String;
-        
+    	public static var instance:User;
+    	
+        private var _user:String;
+        private var _pass:String;
+                
         [Bindable]
-        var valid:Boolean = false;
-        
-        [Bindable]
-        var authenticated:Boolean = false;
+        public var authenticated:Boolean = false;
         
         public function User(user:String, password:String)
         {
-            this.user = user;
-            this.pass = password;
+            this._user = user;
+            this._pass = password;
         }
         
-        public function getUser():String{
-            return this.user;
+        public function get user():String{
+            return this._user;
         }
         
-        public function getPassword():String{
-            return this.pass;
+        public function get password():String{
+            return this._pass;
         }
     }
 }

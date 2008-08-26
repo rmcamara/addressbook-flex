@@ -2,8 +2,7 @@
 <mx:Application 
     xmlns:mx="http://www.adobe.com/2006/mxml"
     xmlns:camara="net.thecamaras.*"
-    layout="vertical"
-    backgroundColor="white">
+    layout="vertical" creationComplete="init()">
     
     <mx:Style>
         .titleStyle {
@@ -19,15 +18,27 @@
                 Alert.show("Ready to login", "alert" );
             }
             
+            private function init():void {
+                login.addEventListener(LoginDialog.EVENT_AUTHENTICATED, handleAuthenticate);
+                
+            }
+            
+            private function handleAuthenticate(e:Event):void {
+                appStack.selectedIndex=1;
+            }
         ]]>
     </mx:Script>
     
     <mx:Panel title="Camara Family Address Book"
         titleStyleName="titleStyle"
-        width="800" 
-        height="500"
+        width="1024" 
+        height="800"
         textAlign="center"
         horizontalAlign="center">
-        <camara:LoginDialog />
+        
+        <mx:ViewStack id="appStack" width="100%" height="100%">
+            <camara:LoginDialog id="login"/>
+            <camara:AddressBook id="AddressBook" />
+        </mx:ViewStack>
     </mx:Panel>    
 </mx:Application>
