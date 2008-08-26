@@ -11,23 +11,48 @@
         
             import mx.rpc.events.ResultEvent;
             import mx.controls.Alert;
+            
+            [Bindable]
+            public var addressData:XMLList;
 
             private function init():void {
+                refreshAddress();
+                
+            }
+            
+            public function refreshAddress():void {
+                Connection.instance.send("address.xml", new Object(), populateAddress); 
+            }
+            
+            private function populateAddress(xml:XML):void {
+                addressData = xml.children();
             }
         ]]>
     </mx:Script>
-    <mx:VBox height="100%" width="100%" label="Address List">
+    
+    <mx:Array id="altColors">
+        <mx:Object>0xFFFFFF</mx:Object>
+        <mx:Object>0xCFCFFF</mx:Object>
+    </mx:Array>
+
+    <mx:VBox height="100%" width="100%" label="Address List" paddingLeft="10" paddingRight="10">
         <mx:HBox width="100%" height="32" verticalAlign="middle">
-            <mx:Label text="Name:" width="75" textAlign="right"/>
-            <mx:TextInput borderStyle="outset" borderColor="#000000" id="nameTxt" width="200"/>
-            <mx:Button label="Search" id="search"/>
+            <mx:Label text="Name:" width="60" textAlign="right"/>
+            <mx:TextInput borderStyle="outset" borderColor="#000000" id="nameTxt" width="333"/>
+            <mx:Button label="Search" id="search" click="refreshAddress()"/>
+            <mx:HBox width="100%" height="32" verticalAlign="middle" horizontalAlign="right"  horizontalGap="0" paddingRight="20">
+                <mx:Button label="Add new Address" id="addBtn" />
+            </mx:HBox> 
         </mx:HBox>
-        <mx:AdvancedDataGrid id="addressee" designViewDataType="tree" width="100%">
+        <mx:AdvancedDataGrid id="addressee" designViewDataType="tree" width="100%" dataProvider="{addressData}" selectionMode="singleRow" editable="false" alternatingItemColors="{altColors}">
             <mx:columns>
-                <mx:AdvancedDataGridColumn headerText="Name" dataField="col1" width="60"/>
-                <mx:AdvancedDataGridColumn headerText="City" dataField="col2" width="30"/>
-                <mx:AdvancedDataGridColumn headerText="State" dataField="col3" width="10"/>
+                <mx:AdvancedDataGridColumn headerText="Name" dataField="name" width="40" textAlign="left"/>
+                <mx:AdvancedDataGridColumn headerText="Address" dataField="address" width="25" textAlign="left"/>
+                <mx:AdvancedDataGridColumn headerText="City" dataField="city" width="15"/>
+                <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="8"/>
+                <mx:AdvancedDataGridColumn headerText="Zipcode" dataField="zipcode" width="12"/>
             </mx:columns>
         </mx:AdvancedDataGrid>
+        
     </mx:VBox>
 </mx:TabNavigator>

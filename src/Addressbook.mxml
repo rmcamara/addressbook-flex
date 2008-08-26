@@ -12,15 +12,16 @@
     
     <mx:Script>
         <![CDATA[
+            import mx.events.DynamicEvent;
+            import net.thecamaras.User;
             import mx.controls.Alert;
-                        
-            public function authenticate(): void {
-                Alert.show("Ready to login", "alert" );
-            }
             
             private function init():void {
                 login.addEventListener(LoginDialog.EVENT_AUTHENTICATED, handleAuthenticate);
                 
+                User.instance = new User("rcamara", "pass");
+                User.instance.authenticated = true;
+                login.dispatchEvent(new DynamicEvent(LoginDialog.EVENT_AUTHENTICATED));
             }
             
             private function handleAuthenticate(e:Event):void {

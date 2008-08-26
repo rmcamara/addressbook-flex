@@ -31,6 +31,12 @@ package net.thecamaras
 		public function send(url:String, parameters:Object, handler:Function):void {
 		    connection.cancel();
 		    
+		    if (User.instance != null && User.instance.authenticated)
+		    {
+		        parameters.user = User.instance.user;
+		        parameters.pass = User.instance.password;
+		    }
+		    
 		    var handleResults:Function = function(e:ResultEvent):void
 		    {
 		        connection.removeEventListener(ResultEvent.RESULT, handleResults);
