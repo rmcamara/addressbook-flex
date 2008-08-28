@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `addressgroup` (
 
 DROP TABLE IF EXISTS `people`;
 CREATE TABLE IF NOT EXISTS `people` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL auto_increment,
   `gid` int(10) unsigned NOT NULL,
   `firstname` varchar(100) default NULL,
   `lastname` varchar(100) default NULL,

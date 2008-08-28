@@ -6,6 +6,7 @@
     
     <mx:Script>
         <![CDATA[
+            import mx.collections.HierarchicalData;
             import mx.events.DynamicEvent;
             public static const EVENT_AUTHENTICATED:String = "authentication";
         
@@ -13,7 +14,7 @@
             import mx.controls.Alert;
             
             [Bindable]
-            public var addressData:XMLList;
+            public var addressData:HierarchicalData;
 
             private function init():void {
                 refreshAddress();
@@ -21,11 +22,11 @@
             }
             
             public function refreshAddress():void {
-                Connection.instance.send("address.xml", new Object(), populateAddress); 
+                Connection.instance.send("address.php", new Object(), populateAddress); 
             }
             
             private function populateAddress(xml:XML):void {
-                addressData = xml.children();
+                addressData = new HierarchicalData(xml.data.children());
             }
         ]]>
     </mx:Script>
@@ -44,13 +45,14 @@
                 <mx:Button label="Add new Address" id="addBtn" />
             </mx:HBox> 
         </mx:HBox>
-        <mx:AdvancedDataGrid id="addressee" designViewDataType="tree" width="100%" dataProvider="{addressData}" selectionMode="singleRow" editable="false" alternatingItemColors="{altColors}">
+        <mx:AdvancedDataGrid id="addressee" designViewDataType="tree" width="100%" height="90%" dataProvider="{addressData}" selectionMode="singleRow" editable="false" alternatingItemColors="{altColors}">
             <mx:columns>
-                <mx:AdvancedDataGridColumn headerText="Name" dataField="name" width="40" textAlign="left"/>
-                <mx:AdvancedDataGridColumn headerText="Address" dataField="address" width="25" textAlign="left"/>
-                <mx:AdvancedDataGridColumn headerText="City" dataField="city" width="15"/>
-                <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="8"/>
-                <mx:AdvancedDataGridColumn headerText="Zipcode" dataField="zipcode" width="12"/>
+                <mx:AdvancedDataGridColumn headerText="Name" dataField="@name" width="40" textAlign="left"/>
+                <mx:AdvancedDataGridColumn headerText="Address" dataField="@address" width="25" textAlign="left"/>
+                <mx:AdvancedDataGridColumn headerText="Address 2" dataField="@address2" width="25" textAlign="left"/>
+                <mx:AdvancedDataGridColumn headerText="City" dataField="@city" width="15"/>
+                <mx:AdvancedDataGridColumn headerText="State" dataField="@state" width="8"/>
+                <mx:AdvancedDataGridColumn headerText="Zipcode" dataField="@zipcode" width="12"/>
             </mx:columns>
         </mx:AdvancedDataGrid>
         

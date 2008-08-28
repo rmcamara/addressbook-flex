@@ -23,7 +23,7 @@
 	    <classpath>
 	      <pathelement path="db/mysql-connector-java-5.1.6-bin.jar"/>      
 	    </classpath>
-	  	<transaction>use "${database.name}"</transaction>
+	  	<transaction>use ${database.name}</transaction>
 	    <transaction src="db/scheme.sql"/>
 	  </sql>
 	</target>
