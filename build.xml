@@ -1,0 +1,43 @@
+<project name="addressbook" default="deploy">
+	<dirname property="root.dir" file="${ant.file}"/> 
+	<!-- Load the custom properties -->
+	<loadproperties srcfile="build.properties" />
+	
+	<target name="deploy" depends="php-deploy">
+	
+	</target>
+	
+	
+	<target name="php-deploy">
+		<fail message="missing the deploy location." unless="php.deploy.dir"/>
+		<copy includeemptydirs="true" todir="${php.deploy.dir}">
+			<fileset dir="php"/>
+		</copy>
+	</target>
+	
+	<target name="db.setup">
+	  <sql driver="com.mysql.jdbc.Driver"
+	       url="jdbc:mysql://localhost:3306"
+	       userid="${mysql.username}" 
+	  	password="${mysql.password}" >
+	    <classpath>
+	      <pathelement path="db/mysql-connector-java-5.1.6-bin.jar"/>      
+	    </classpath>
+	  	<transaction>use "${database.name}"</transaction>
+	    <transaction src="db/scheme.sql"/>
+	  </sql>
+	</target>
+	
+	<target name="db.data">
+	      <sql driver="com.mysql.jdbc.Driver"
+	           url="jdbc:mysql://localhost:3306"
+	           userid="${mysql.username}" 
+	        password="${mysql.password}" >
+	        <classpath>
+	          <pathelement path="db/mysql-connector-java-5.1.6-bin.jar"/>      
+	        </classpath>
+	        <transaction>use ${database.name}</transaction>
+	        <transaction src="db/data.sql"/>
+	      </sql>
+	    </target>
+</project>
