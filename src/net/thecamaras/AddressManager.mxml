@@ -7,13 +7,27 @@
     
     <mx:Script>
         <![CDATA[
+            import mx.core.Container;
+            import mx.core.UIComponent;
             import net.thecamaras.events.OpenEditorEvent;
             private function init():void {
                 places.addEventListener(OpenEditorEvent.OPEN_EDITOR_EVENT, openEditor);
             }
             
             private function openEditor(event:OpenEditorEvent):void{
-                var editor:PlaceEditor = new PlaceEditor(event.model);
+                
+                var editor:Container;
+                
+                if (event.model.name() == "Person")
+                {
+                    editor = new PeopleEditor();
+                }
+                else
+                {
+                    editor = new PlaceEditor(event.model); 
+                }
+                
+                
                 addChild(editor);
                 this.selectedChild = editor;
             }

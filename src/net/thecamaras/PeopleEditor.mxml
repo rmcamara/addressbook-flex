@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+    <mx:Style >
+        .textInput {
+            text-align:left;   
+        }
+    </mx:Style>
+
+    <mx:Script >
+        <![CDATA[
+            public static const EDIT_WIDTH:int = 250;
+            
+            private var person:XML;
+            private var modelSet:Boolean = false;
+            
+            public function set model (xml:XML):void{
+                this.person = xml;
+                this.modelSet = true;
+                
+                
+                
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    
+
+    <mx:VDividedBox x="0" y="0" height="90%" width="100%">
+        <mx:HDividedBox width="100%" height="60%">
+            <mx:TitleWindow id="peopleBox" title="Name" width="50%" height="100%">
+            </mx:TitleWindow>
+            <mx:Form id="pEditor" width="50%" height="100%">
+                <mx:FormHeading label="Edit Details...." />
+                <mx:FormItem label="First Name:">
+                    <mx:TextInput id="firstName" 
+                        width="{EDIT_WIDTH}" styleName="textInput"/>
+                </mx:FormItem>
+                <mx:FormItem label="Last Name:">
+                    <mx:TextInput id="lastName" 
+                        width="{EDIT_WIDTH}" styleName="textInput"/>
+                </mx:FormItem>
+                <mx:FormItem label="Email:" >
+                    <mx:TextInput id="email" 
+                        width="{EDIT_WIDTH}" styleName="textInput"/>
+                </mx:FormItem>
+                <mx:FormItem label="Cell Phone:">
+                    <mx:TextInput id="cellphone" 
+                        width="{EDIT_WIDTH}" styleName="textInput"/>
+                </mx:FormItem>
+                <mx:FormItem label="Birthdate" >
+                    <mx:DateField id="birthDate" 
+                        width="{EDIT_WIDTH}" styleName="textInput"/>
+                </mx:FormItem>
+                <mx:FormItem label="Details:" >
+                    <mx:TextArea id="details" 
+                        width="{EDIT_WIDTH}" height="175" 
+                        styleName="textInput"/>
+                </mx:FormItem>
+            </mx:Form>
+        </mx:HDividedBox>
+        <mx:TextArea id="placeListing" text="test" width="100%" height="40%">
+            
+        </mx:TextArea>
+    </mx:VDividedBox>
+    <mx:HBox width="100%" horizontalAlign="right">
+        <mx:Button id="saveBtn" label="save" />
+        <mx:Button id="closeBtn" label="close" />
+    </mx:HBox>
+</mx:VBox>
