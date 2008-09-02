@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" >
+
+<mx:Script>
+	<![CDATA[
+		import mx.collections.ArrayCollection;
+		import mx.collections.HierarchicalData;
+		import mx.collections.IHierarchicalCollectionView;
+		
+		// dataProvider for the AdvancedDataGrid
+		[Bindable]
+		private var fs2:Object =  
+			{fileName:"mxmxmxmx", children: [
+			        {fileName: "mx", children: [
+			            {fileName: "mx", size:"5563  bytes", lastModified:"October 6, 2006"},
+			            {fileName: "mx", size:"2509  bytes", lastModified:"June 12, 2006"}]},
+			        {fileName:"mxmx", size:"1724 bytes", lastModified:"October 6, 2006", children: [
+			            {fileName:"mx", size:"17045  bytes", lastModified:"November 2, 2006"},
+			            {fileName:"mxmx", size:"7263 bytes", lastModified:"June 1, 2006"}]},
+			        {fileName: "mxmxmx", children: [
+			            {fileName: "mx", size:"169825  bytes", lastModified:"December 6, 2006"},
+			            {fileName: "mxmxmx", children: [
+			                {fileName: "mx", size:"18587  bytes", lastModified:"November 20, 2006"},
+			                {fileName: "mxmxmx", size:"36419  bytes", lastModified:"December 6, 2006"}]}]}
+			        
+			    ]};
+			    
+	    private function filterIt():void
+	    {
+	    	// assign filter function to the AdvancedDataGrid's dataProvider
+	    	IHierarchicalCollectionView(adg.dataProvider).filterFunction = myFilterFunc;
+		            
+		    // refresh the ADG's dataProvider
+		    IHierarchicalCollectionView(adg.dataProvider).refresh();
+	    }
+	    
+	    private function myFilterFunc(item:Object):Boolean
+        {
+        	// check if the item starts with the string in the text field
+        	if(item.hasOwnProperty("fileName") && (item["fileName"].toString()).substr(0,txt.length) == txt.text)
+        		return true;
+        		
+        	return false;
+        }
+	]]>
+</mx:Script>
+
+	<mx:Label fontSize="16" htmlText="&lt;b&gt; Filtering of Hierarchical Data in AdvancedDataGrid &lt;/b&gt;" />
+	
+	<mx:AdvancedDataGrid id="adg" dataProvider="{new HierarchicalData(fs2)}" displayItemsExpanded="true" 
+		width="400" height="350" >
+		<mx:columns>
+			<mx:AdvancedDataGridColumn dataField="fileName" />
+			<mx:AdvancedDataGridColumn dataField="size" />
+			<mx:AdvancedDataGridColumn dataField="lastModified" />
+		</mx:columns>
+	</mx:AdvancedDataGrid>
+	
+	<mx:HBox>
+		
+		<mx:Label text="Enter text:" />
+		<mx:TextInput id="txt" change="filterIt();" />
+	
+	</mx:HBox>
+
+</mx:Application>

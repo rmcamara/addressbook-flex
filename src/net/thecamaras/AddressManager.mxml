@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TabNavigator 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:camara="net.thecamaras.*"
+    horizontalAlign="left" 
+    creationComplete="init()" >
+    
+    <mx:Script>
+        <![CDATA[
+            import net.thecamaras.events.OpenEditorEvent;
+            private function init():void {
+                places.addEventListener(OpenEditorEvent.OPEN_EDITOR_EVENT, openEditor);
+            }
+            
+            private function openEditor(event:OpenEditorEvent):void{
+                var editor:PlaceEditor = new PlaceEditor(event.model);
+                addChild(editor);
+                this.selectedChild = editor;
+            }
+        ]]>
+    </mx:Script>
+
+    <camara:PlacesList id="places"
+        label="Places" >
+    </camara:PlacesList>        
+
+</mx:TabNavigator>

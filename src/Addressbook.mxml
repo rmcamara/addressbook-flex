@@ -39,7 +39,7 @@
         
         <mx:ViewStack id="appStack" width="100%" height="100%">
             <camara:LoginDialog id="login"/>
-            <camara:AddressBook id="AddressBook" />
+            <camara:AddressManager id="AddressBook" />
         </mx:ViewStack>
     </mx:Panel>    
 </mx:Application>

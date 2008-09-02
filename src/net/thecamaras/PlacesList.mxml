@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="left" 
+    creationComplete="init()" 
+    height="100%" width="100%" 
+    paddingLeft="10" paddingRight="10" >
+    
+    <mx:Script>
+        <![CDATA[
+            import net.thecamaras.events.OpenEditorEvent;
+            import mx.collections.IHierarchicalCollectionView;
+            import mx.utils.ObjectUtil;
+            import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+            import mx.controls.AdvancedDataGrid;
+            import mx.collections.HierarchicalData;
+            import mx.events.DynamicEvent;
+        
+            import mx.rpc.events.ResultEvent;
+            import mx.controls.Alert;
+            
+            public static const TYPE_PLACE:String = "Place";
+            public static const TYPE_PERSON:String = "Person";
+            
+            [Bindable]
+            public var placeList:HierarchicalData; // XML list of places
+
+            private function init():void {
+                refreshAddress();
+                
+                addressee.doubleClickEnabled=true;
+                addressee.addEventListener(MouseEvent.DOUBLE_CLICK, openEditor);
+                addressee.addEventListener(KeyboardEvent.KEY_DOWN, 
+                    function(e:KeyboardEvent):void{if (e.keyCode == 13) openEditor(e);});
+                addressee.setFocus();
+                
+                
+            }
+            
+            public function refreshAddress():void {
+                var args:Object = new Object();
+                args.method = "ListPlaces";
+                Connection.instance.send("address.php", args, populateAddress); 
+            }
+            
+            private function populateAddress(xml:XML):void {
+                var data:HierarchicalData = new HierarchicalData(xml.data.children())
+                data.childrenField = "People";
+                placeList = data;
+            }
+            
+            private function searchGrid():void {
+                var provider:IHierarchicalCollectionView = 
+                    IHierarchicalCollectionView(addressee.dataProvider);
+                provider.filterFunction = filterText;
+                provider.refresh();
+            }
+            
+            private function filterText(item:Object):Boolean{
+                var xitem:XML = XML(item);
+                
+                if (nameTxt.text == "" ){
+                    return true;
+                }
+                
+                var filterKey:String;
+                filterKey = nameTxt.text.toLocaleLowerCase();
+                for each (var x:XML in xitem.attributes()){
+                    if (x.toString().toLocaleLowerCase().indexOf(filterKey) > -1){
+                        return true;
+                    }
+                }
+                
+                // Check the children
+                for each (var i:XML in xitem.children()){
+                    if (filterText(i)){
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            /** 
+             * Label handler for the name column. 
+             **/
+            private function displayName(item:Object, column:AdvancedDataGridColumn):String{
+                var xml:XML = XML(item);
+                
+                if (xml.attribute('name').length() > 0){
+                    return xml.@name;
+                }
+                else{
+                    return xml.@firstname + " " + xml.@lastname;
+                }
+            }
+            
+            /**
+             * Sort two xml objects. Compare is performed on the name and first name. 
+             * 
+             * @param obj1 base object.
+             * @param obj2 object to compare to.
+             **/ 
+            private function sortByName(obj1:Object, obj2:Object): int {
+                var xml:XML = XML(obj1);
+                var xml2:XML = XML(obj2);
+               
+                if (xml.name() == TYPE_PLACE){
+                    if (xml2.name() == TYPE_PLACE){
+                        // string compare the location name
+                        return ObjectUtil.stringCompare(xml.@name, xml2.@name, true);                   
+                    }          
+                    return 1; // item2 is a person
+                }
+                else {
+                    if (xml2.name() == TYPE_PLACE){
+                        return -1;// item2 is a location                        
+                    }
+                    // String compare the first name of the two people
+                    return ObjectUtil.stringCompare(xml.@firstname, xml2.@firstname, true);
+                }
+            }
+            
+            private function openEditor(event:Event):void{
+                var selected:XML = XML(addressee.selectedItem);
+                if (selected == null){
+                    Alert.show("Nothing selected. Please select something to open");
+                }
+                this.dispatchEvent(new OpenEditorEvent(selected));
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Array id="altColors">
+        <mx:Object>0xFFFFFF</mx:Object>
+        <mx:Object>0xCFCFFF</mx:Object>
+    </mx:Array>
+
+    <mx:HBox width="100%" height="32" verticalAlign="middle">
+        <mx:Label 
+            width="60" 
+            text="Name:" textAlign="right"/>
+        <mx:TextInput id="nameTxt"
+            borderStyle="outset" borderColor="#000000" 
+            width="333" textAlign="left" 
+            change="searchGrid()"/>
+        <mx:Button id="search" 
+            label="Search" click="searchGrid()"/>
+        <mx:HBox 
+            width="100%" height="32" 
+            verticalAlign="middle" horizontalAlign="right"  
+            horizontalGap="0" paddingRight="20">
+            <mx:Button id="addBtn" 
+                label="Add new Address"  />
+        </mx:HBox> 
+    </mx:HBox>
+    
+    <mx:AdvancedDataGrid id="addressee"
+        width="100%" height="90%"
+        designViewDataType="tree" dataProvider="{placeList}" 
+        alternatingItemColors="{altColors}" treeColumn="{treeCol}" 
+        selectionMode="singleRow" editable="false" sortExpertMode="true" >
+        <mx:columns >
+            <mx:AdvancedDataGridColumn id="treeCol" 
+                width="6"
+                sortable="false" editable="false" resizable="false" />
+            <mx:AdvancedDataGridColumn id="nameCol" 
+                headerText="Name" dataField="@name" 
+                labelFunction="displayName" sortCompareFunction="sortByName" 
+                width="40" textAlign="left" sortable="true" />
+            <mx:AdvancedDataGridColumn id="addressCol"
+                headerText="Address" dataField="@address" 
+                width="25" textAlign="left"/>
+            <mx:AdvancedDataGridColumn  id="address2Col" 
+                headerText="Address 2" dataField="@address2" 
+                width="25" textAlign="left"/>
+            <mx:AdvancedDataGridColumn id="cityCol"
+                headerText="City" dataField="@city" width="15"/>
+            <mx:AdvancedDataGridColumn id="stateCol"
+                headerText="State" dataField="@state" width="8"/>
+            <mx:AdvancedDataGridColumn id="zipcodeCol"
+                headerText="Zipcode" dataField="@zipcode" width="12"/>
+        </mx:columns>
+    </mx:AdvancedDataGrid>
+        
+</mx:VBox>

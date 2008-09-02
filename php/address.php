@@ -1,7 +1,7 @@
 <?php
 require_once("dbconnect.php");
 switch (@$_REQUEST["method"]) {
-    case "ListAll":
+    case "ListPlaces":
         ListAllAddress();
         break;
 //    case "InsertAddressee":
@@ -44,7 +44,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 function ListAllAddress() {
     global $DB;
 
-    $query = "SELECT * FROM addressgroup";
+    $query = "SELECT * FROM places";
     $results = $DB->Execute($query);
 
     $xml = new XMLWriter();
@@ -55,14 +55,17 @@ function ListAllAddress() {
     $xml->startElement('data');
 
     while ($AddressGroup = $results->FetchRow()) {
-        $xml->startElement('AddressGroup');
+        $xml->startElement('Place');
         foreach ($AddressGroup as $key => $value){
             $xml->writeAttribute  ($key, $value);
         }
 
-        $pquery = "Select * FROM people where gid=" . $AddressGroup['id'];
+        $pquery = "Select id, firstname, lastname, title ".
+                  "FROM people LEFT JOIN links ON people.id=links.people ".
+                  "WHERE links.places=" . $AddressGroup['id'];
         $people = $DB->Execute($pquery);
 
+        $xml->startElement('People');
         while ($person = $people->FetchRow()) {
             $xml->startElement('Person');
             foreach ($person as $key => $value){
@@ -70,6 +73,7 @@ function ListAllAddress() {
             }
             $xml->endElement(); // end person
         }
+        $xml->endElement();
         $xml->endElement();
     }
 
