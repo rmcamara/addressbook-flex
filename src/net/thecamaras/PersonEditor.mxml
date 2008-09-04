@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init();">
     <mx:Style >
         .textInput {
             text-align:left;   
@@ -8,58 +8,113 @@
 
     <mx:Script >
         <![CDATA[
+            import mx.events.ValidationResultEvent;
+            import net.thecamaras.models.Person;
             public static const EDIT_WIDTH:int = 250;
             
             [Bindable]
-            public var _person:XML = new XML();
+            public var _person:Person = new Person(null);
             
-            public function set person(person:XML):void {
-                this._person = person;
-                birth.selectedDate = new Date(Date.parse(person.@birth)); 
+            [Bindable]
+            public var dirty:Boolean = false;
+            
+            private function init():void{
+                title.addEventListener(Event.CHANGE, makeDirty);
+                firstName.addEventListener(Event.CHANGE, makeDirty);
+                lastName.addEventListener(Event.CHANGE, makeDirty);
+                email.addEventListener(Event.CHANGE, makeDirty);
+                cellphone.addEventListener(Event.CHANGE, makeDirty);
+                birth.addEventListener(Event.CHANGE, makeDirty);
+                details.addEventListener(Event.CHANGE, makeDirty);
+            }
+            
+            private function makeDirty(e:Event):void{
+                dirty = true;
+            }
+            
+            public function set person(person:Person):void {
+                this._person = person; 
+            }
+            
+            public function isInvalid():Boolean{
+                var vResult:ValidationResultEvent;
+                vResult = firstNameVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    return true;
+                }
+                
+                vResult = lastNameVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    return true;
+                }
+                
+                vResult = emailVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    return true;
+                }
+                
+                vResult = cellVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    return true;
+                }
+                
+                vResult = birthDateVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    return true;
+                }
+                
+                return false;
             }
         ]]>
     </mx:Script>
+        
+    <mx:StringValidator id="firstNameVal" 
+        source="{firstName}" property="text" maxLength="100" />
+    <mx:StringValidator id="lastNameVal" 
+        source="{lastName}" property="text" maxLength="100" required="false"/>
+    <mx:EmailValidator id="emailVal" 
+        source="{email}" property="text" required="false"/>
+    <mx:PhoneNumberValidator id="cellVal" 
+        source="{cellphone}" property="text" required="false" />
+    <mx:DateValidator id="birthDateVal"
+        source="{birth}" property="selectedDate" required="false"/>    
     
-    <mx:Binding source="_person.@firstname" destination="firstName.text"/>
-    <mx:Binding destination="_person.@firstname" source="firstName.text"/>
-    
-    <mx:Binding source="_person.@lastname" destination="lastName.text"/>
-    <mx:Binding destination="_person.@lastName" source="lastName.text"/>
-    
-    <mx:Binding source="_person.@email" destination="email.text"/>
-    <mx:Binding destination="_person.@email" source="email.text"/>
-    
-    <mx:Binding source="_person.@cell" destination="cellphone.text"/>
-    <mx:Binding destination="_person.@cell" source="cellphone.text"/>
-    
-    <mx:Binding source="birth.selectedDate.toDateString()" destination="_person.@birth"/>
-    
-    <mx:Binding source="_person.@details" destination="details.text"/>
-    <mx:Binding destination="_person.@details" source="details.text"/>
-
     <mx:FormHeading label="Edit Details...." />
+        <mx:FormItem label="Title:" >
+            <mx:ComboBox id="title" 
+                dataProvider="{Constants.TITLE_LIST}"
+                selectedIndex="{Constants.TITLE_LIST.indexOf(_person.title)}"
+                width="{EDIT_WIDTH}" styleName="textInput" >
+            </mx:ComboBox>
+        </mx:FormItem>
         <mx:FormItem label="First Name:">
             <mx:TextInput id="firstName" 
+                text="{_person.firstname}"
                 width="{EDIT_WIDTH}" styleName="textInput"/>
         </mx:FormItem>
         <mx:FormItem label="Last Name:">
-            <mx:TextInput id="lastName" 
+            <mx:TextInput id="lastName"
+                text="{_person.lastname}" 
                 width="{EDIT_WIDTH}" styleName="textInput"/>
         </mx:FormItem>
         <mx:FormItem label="Email:" >
             <mx:TextInput id="email" 
+                text="{_person.email}"
                 width="{EDIT_WIDTH}" styleName="textInput"/>
         </mx:FormItem>
         <mx:FormItem label="Cell Phone:">
             <mx:TextInput id="cellphone"
+                text="{_person.cell}"
                 width="{EDIT_WIDTH}" styleName="textInput"/>
         </mx:FormItem>
         <mx:FormItem label="Birthdate" >
             <mx:DateField id="birth"
+                selectedDate="{_person.birthdate}"
                 width="{EDIT_WIDTH}" styleName="textInput"/>
         </mx:FormItem>
         <mx:FormItem label="Details:" >
             <mx:TextArea id="details" 
+                text="{_person.details}"
                 width="{EDIT_WIDTH}" height="175" 
                 styleName="textInput"/>
     </mx:FormItem>

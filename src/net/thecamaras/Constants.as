@@ -61,6 +61,16 @@ package net.thecamaras
             {label:"WISCONSIN", data:"WI"}, 
             {label:"WYOMING", data:"WY"}];
         
+        public static const TITLE_LIST:Array = [
+            "",
+            "Mr",
+            "Mrs",
+            "Ms",
+            "Miss",
+            "Dr",
+            "Lt"];
+        
+        
         
         public function Constants()
         {

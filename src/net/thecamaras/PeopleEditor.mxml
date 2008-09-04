@@ -8,6 +8,9 @@
 
     <mx:Script >
         <![CDATA[
+            import mx.events.CloseEvent;
+            import mx.utils.ObjectUtil;
+            import net.thecamaras.models.Person;
             import mx.controls.Alert;
             
             
@@ -15,7 +18,7 @@
             private static const PERSON_ICON:Class;
             
             [Bindable]
-            private var person:XML;
+            private var person:Person;
             private var modelSet:Boolean = false;
             
             public function set model (xml:XML):void{
@@ -27,20 +30,55 @@
             }
             
             private function personLoaded(xml:XML):void{
-                this.person = xml.data.Person[0];
+                this.person = new Person(xml.data.Person[0]);
                 this.modelSet = true;
-                this.label = person.@firstname;
+                this.label = person.firstname;
                 this.titleLabel.text = getName();
                 this.pEditor.person = this.person;
             }
             
             private function getName():String {
                 if (person != null){
-                    return person.@firstname + ' ' + person.@lastname;
+                    return person.firstname + ' ' + person.lastname;
                 }
                 else{
                     return "New Person";
                 }
+            }
+            
+            private function save():void{
+                trace("Saving...");
+                if (pEditor.isInvalid()){
+                    Alert.show("Unable to save: Invalid values in the detail fields", 
+                               "Error Saving..."); 
+                    return;
+                }
+                
+                var args:Object = new Object();
+                args.method = "SavePerson";
+                args.personId = person.id;
+                Connection.instance.send("address.php", args, personLoaded); 
+                
+                pEditor.dirty = false;
+            }
+            
+            private function close():void{
+                if (pEditor.dirty){
+                    Alert.show("You have unsaved changes. Do you wish to close?", "Close", 
+                    Alert.OK | Alert.CANCEL, this, doClose, null, Alert.CANCEL);     
+                }
+                else{
+                    doClose(new CloseEvent(CloseEvent.CLOSE, false, false, Alert.OK));
+                }
+            }
+            
+            private function doClose(e:CloseEvent):void{
+                if (e.detail != Alert.OK){
+                    return;
+                }
+                
+                // Should probally fire an event requesting close
+                this.parent.removeChild(this);
             }
             
         ]]>
@@ -63,7 +101,7 @@
         </mx:TextArea>
     </mx:VDividedBox>
     <mx:HBox width="100%" horizontalAlign="right">
-        <mx:Button id="saveBtn" label="save" />
-        <mx:Button id="closeBtn" label="close" click="Alert.show(person)"/>
+        <mx:Button id="saveBtn" label="save" click="save();" enabled="{pEditor.dirty}"/>
+        <mx:Button id="closeBtn" label="close" click="close();"/>
     </mx:HBox>
 </mx:VBox>

@@ -7,7 +7,7 @@ switch (@$_REQUEST["method"]) {
     case "Person":
         GetPerson();
         break;
-        
+
 //    case "InsertAddressee":
 //        $ret = InsertAddress();
 //        break;
@@ -46,6 +46,10 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 
 function GetValueString($key, $value, $results){
+    if($value == null){
+        return $value;
+    }
+
     if ($key == 'birth' || $key == "last-update"){
         return $results->UserTimeStamp($value, "Y/m/d H:i:s");
     }
@@ -56,7 +60,7 @@ function GetValueString($key, $value, $results){
 
 function ListAllAddress() {
     global $DB;
-    
+
     // validate the id is correct
 
     $query = "SELECT * FROM places";
