@@ -4,6 +4,10 @@ switch (@$_REQUEST["method"]) {
     case "ListPlaces":
         ListAllAddress();
         break;
+    case "Person":
+        GetPerson();
+        break;
+        
 //    case "InsertAddressee":
 //        $ret = InsertAddress();
 //        break;
@@ -41,8 +45,19 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     return $theValue;
 }
 
+function GetValueString($key, $value, $results){
+    if ($key == 'birth' || $key == "last-update"){
+        return $results->UserTimeStamp($value, "Y/m/d H:i:s");
+    }
+    else{
+        return $value;
+    }
+}
+
 function ListAllAddress() {
     global $DB;
+    
+    // validate the id is correct
 
     $query = "SELECT * FROM places";
     $results = $DB->Execute($query);
@@ -57,7 +72,7 @@ function ListAllAddress() {
     while ($AddressGroup = $results->FetchRow()) {
         $xml->startElement('Place');
         foreach ($AddressGroup as $key => $value){
-            $xml->writeAttribute  ($key, $value);
+            $xml->writeAttribute($key, GetValueString($key, $value, $results));
         }
 
         $pquery = "Select id, firstname, lastname, title ".
@@ -69,7 +84,7 @@ function ListAllAddress() {
         while ($person = $people->FetchRow()) {
             $xml->startElement('Person');
             foreach ($person as $key => $value){
-                $xml->writeAttribute  ($key, $value);
+                $xml->writeAttribute($key, GetValueString($key, $value, $results));
             }
             $xml->endElement(); // end person
         }
@@ -83,6 +98,51 @@ function ListAllAddress() {
     header("Content-type: text/xml");
     print $xml->outputMemory(true);
 }
+
+function GetPerson() {
+    global $DB;
+
+    $query = "SELECT * FROM people WHERE id=".$_REQUEST["personId"];
+    $results = $DB->Execute($query);
+
+    $xml = new XMLWriter();
+    $xml->openMemory();
+    $xml->setIndent(true);
+    $xml->startDocument('1.0','UTF-8');
+    $xml->startElement('response');
+    $xml->startElement('data');
+
+    while ($person = $results->FetchRow()) {
+        $xml->startElement('Person');
+        foreach ($person as $key => $value){
+            $xml->writeAttribute($key, GetValueString($key, $value, $results));
+        }
+
+        $pquery = "Select * ".
+                  "FROM places LEFT JOIN links ON places.id=links.places ".
+                  "WHERE links.people=" . $person['id'];
+        $places = $DB->Execute($pquery);
+
+        $xml->startElement('Places');
+        while ($place = $places->FetchRow()) {
+            $xml->startElement('Place');
+            foreach ($place as $key => $value){
+                $xml->writeAttribute($key, GetValueString($key, $value, $results));
+            }
+            $xml->endElement(); // end person
+        }
+        $xml->endElement();
+        $xml->endElement();
+    }
+
+    $xml->endElement(); // end data
+    $xml->endElement(); // end response
+    $xml->endDocument();
+    header("Content-type: text/xml");
+    print $xml->outputMemory(true);
+}
+
+
 /*
 function InsertEmployee() {
 global $conn;

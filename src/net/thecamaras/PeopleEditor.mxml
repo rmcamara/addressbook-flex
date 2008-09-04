@@ -1,63 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
-    <mx:Style >
-        .textInput {
-            text-align:left;   
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" icon="{PERSON_ICON}" label="New" xmlns:thecamaras="net.thecamaras.*">
+    <mx:Style >        
+        .personTitle {
+            font-size:30;   
         }
     </mx:Style>
 
     <mx:Script >
         <![CDATA[
-            public static const EDIT_WIDTH:int = 250;
+            import mx.controls.Alert;
             
+            
+            [Embed(source="assets/person.png")]
+            private static const PERSON_ICON:Class;
+            
+            [Bindable]
             private var person:XML;
             private var modelSet:Boolean = false;
             
             public function set model (xml:XML):void{
-                this.person = xml;
+                this.label = "loading..";
+                var args:Object = new Object();
+                args.method = "Person";
+                args.personId = xml.@id;
+                Connection.instance.send("address.php", args, personLoaded); 
+            }
+            
+            private function personLoaded(xml:XML):void{
+                this.person = xml.data.Person[0];
                 this.modelSet = true;
-                
-                
-                
+                this.label = person.@firstname;
+                this.titleLabel.text = getName();
+                this.pEditor.person = this.person;
+            }
+            
+            private function getName():String {
+                if (person != null){
+                    return person.@firstname + ' ' + person.@lastname;
+                }
+                else{
+                    return "New Person";
+                }
             }
             
         ]]>
     </mx:Script>
     
     
-
+    <mx:Label id="titleLabel" 
+            styleName="personTitle" 
+            text="{getName()}" >
+            
+    </mx:Label>
     <mx:VDividedBox x="0" y="0" height="90%" width="100%">
         <mx:HDividedBox width="100%" height="60%">
             <mx:TitleWindow id="peopleBox" title="Name" width="50%" height="100%">
             </mx:TitleWindow>
-            <mx:Form id="pEditor" width="50%" height="100%">
-                <mx:FormHeading label="Edit Details...." />
-                <mx:FormItem label="First Name:">
-                    <mx:TextInput id="firstName" 
-                        width="{EDIT_WIDTH}" styleName="textInput"/>
-                </mx:FormItem>
-                <mx:FormItem label="Last Name:">
-                    <mx:TextInput id="lastName" 
-                        width="{EDIT_WIDTH}" styleName="textInput"/>
-                </mx:FormItem>
-                <mx:FormItem label="Email:" >
-                    <mx:TextInput id="email" 
-                        width="{EDIT_WIDTH}" styleName="textInput"/>
-                </mx:FormItem>
-                <mx:FormItem label="Cell Phone:">
-                    <mx:TextInput id="cellphone" 
-                        width="{EDIT_WIDTH}" styleName="textInput"/>
-                </mx:FormItem>
-                <mx:FormItem label="Birthdate" >
-                    <mx:DateField id="birthDate" 
-                        width="{EDIT_WIDTH}" styleName="textInput"/>
-                </mx:FormItem>
-                <mx:FormItem label="Details:" >
-                    <mx:TextArea id="details" 
-                        width="{EDIT_WIDTH}" height="175" 
-                        styleName="textInput"/>
-                </mx:FormItem>
-            </mx:Form>
+            <thecamaras:PersonEditor id="pEditor" width="50%" height="100%" />
         </mx:HDividedBox>
         <mx:TextArea id="placeListing" text="test" width="100%" height="40%">
             
@@ -65,6 +64,6 @@
     </mx:VDividedBox>
     <mx:HBox width="100%" horizontalAlign="right">
         <mx:Button id="saveBtn" label="save" />
-        <mx:Button id="closeBtn" label="close" />
+        <mx:Button id="closeBtn" label="close" click="Alert.show(person)"/>
     </mx:HBox>
 </mx:VBox>

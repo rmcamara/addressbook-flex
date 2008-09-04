@@ -30,6 +30,7 @@
                 
                 addChild(editor);
                 this.selectedChild = editor;
+                PeopleEditor(editor).model = event.model;
             }
         ]]>
     </mx:Script>

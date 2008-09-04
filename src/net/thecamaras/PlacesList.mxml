@@ -8,6 +8,7 @@
     
     <mx:Script>
         <![CDATA[
+            import mx.validators.EmailValidator;
             import net.thecamaras.events.OpenEditorEvent;
             import mx.collections.IHierarchicalCollectionView;
             import mx.utils.ObjectUtil;
@@ -24,6 +25,12 @@
             
             [Bindable]
             public var placeList:HierarchicalData; // XML list of places
+            
+            [Embed(source="assets/person.png")]
+            private static const PERSON_ICON:Class;
+            
+            [Embed(source="assets/place.png")]
+            private static const PLACE_ICON:Class;
 
             private function init():void {
                 refreshAddress();
@@ -120,6 +127,20 @@
                 }
             }
             
+            private function groupIconChooser(item:Object, depth:int):Class{
+                return iconChooser(item);
+            }
+            
+            private function iconChooser(item:Object):Class{
+                var model:XML = XML(item);
+                if (model.name() == TYPE_PERSON){
+                    return PERSON_ICON;
+                }
+                else{
+                    return PLACE_ICON;
+                }
+            }
+            
             private function openEditor(event:Event):void{
                 var selected:XML = XML(addressee.selectedItem);
                 if (selected == null){
@@ -158,10 +179,12 @@
         width="100%" height="90%"
         designViewDataType="tree" dataProvider="{placeList}" 
         alternatingItemColors="{altColors}" treeColumn="{treeCol}" 
+        groupIconFunction="groupIconChooser"
+        iconFunction="iconChooser"
         selectionMode="singleRow" editable="false" sortExpertMode="true" >
         <mx:columns >
             <mx:AdvancedDataGridColumn id="treeCol" 
-                width="6"
+                width="7"
                 sortable="false" editable="false" resizable="false" />
             <mx:AdvancedDataGridColumn id="nameCol" 
                 headerText="Name" dataField="@name" 

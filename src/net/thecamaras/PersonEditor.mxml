@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml">
+    <mx:Style >
+        .textInput {
+            text-align:left;   
+        }
+    </mx:Style>
+
+    <mx:Script >
+        <![CDATA[
+            public static const EDIT_WIDTH:int = 250;
+            
+            [Bindable]
+            public var _person:XML = new XML();
+            
+            public function set person(person:XML):void {
+                this._person = person;
+                birth.selectedDate = new Date(Date.parse(person.@birth)); 
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Binding source="_person.@firstname" destination="firstName.text"/>
+    <mx:Binding destination="_person.@firstname" source="firstName.text"/>
+    
+    <mx:Binding source="_person.@lastname" destination="lastName.text"/>
+    <mx:Binding destination="_person.@lastName" source="lastName.text"/>
+    
+    <mx:Binding source="_person.@email" destination="email.text"/>
+    <mx:Binding destination="_person.@email" source="email.text"/>
+    
+    <mx:Binding source="_person.@cell" destination="cellphone.text"/>
+    <mx:Binding destination="_person.@cell" source="cellphone.text"/>
+    
+    <mx:Binding source="birth.selectedDate.toDateString()" destination="_person.@birth"/>
+    
+    <mx:Binding source="_person.@details" destination="details.text"/>
+    <mx:Binding destination="_person.@details" source="details.text"/>
+
+    <mx:FormHeading label="Edit Details...." />
+        <mx:FormItem label="First Name:">
+            <mx:TextInput id="firstName" 
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Last Name:">
+            <mx:TextInput id="lastName" 
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Email:" >
+            <mx:TextInput id="email" 
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Cell Phone:">
+            <mx:TextInput id="cellphone"
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Birthdate" >
+            <mx:DateField id="birth"
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Details:" >
+            <mx:TextArea id="details" 
+                width="{EDIT_WIDTH}" height="175" 
+                styleName="textInput"/>
+    </mx:FormItem>
+</mx:Form>
