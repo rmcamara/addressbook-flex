@@ -1,5 +1,17 @@
 <?php
 require_once("dbconnect.php");
+
+include("dbscheme.php");
+
+//
+
+$ip = getenv('REMOTE_ADDR');
+$msg = print_r($_REQUEST, true);
+$query = "INSERT INTO requestLog (source, request) VALUES ('$ip', '$msg')";
+$DB->Execute($query);
+
+// perform login check
+
 switch (@$_REQUEST["method"]) {
     case "ListPlaces":
         ListAllAddress();
@@ -7,7 +19,9 @@ switch (@$_REQUEST["method"]) {
     case "Person":
         GetPerson();
         break;
-
+    case "SavePerson":
+        CommitPerson();
+        break;
 //    case "InsertAddressee":
 //        $ret = InsertAddress();
 //        break;
@@ -18,8 +32,7 @@ switch (@$_REQUEST["method"]) {
 
 die();
 
-function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "")
-{
+function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = ""){
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
 
     $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
@@ -106,7 +119,8 @@ function ListAllAddress() {
 function GetPerson() {
     global $DB;
 
-    $query = "SELECT * FROM people WHERE id=".$_REQUEST["personId"];
+    $query = "SELECT * FROM ".Person::TABLE_NAME.
+             " WHERE id=".$_REQUEST[Person::ID];
     $results = $DB->Execute($query);
 
     $xml = new XMLWriter();
@@ -123,7 +137,8 @@ function GetPerson() {
         }
 
         $pquery = "Select * ".
-                  "FROM places LEFT JOIN links ON places.id=links.places ".
+                  "FROM ".Place::TABLE_NAME.
+                  " LEFT JOIN links ON ".Place::TABLE_NAME.'.'.Place::ID."=links.places ".
                   "WHERE links.people=" . $person['id'];
         $places = $DB->Execute($pquery);
 
@@ -146,6 +161,28 @@ function GetPerson() {
     print $xml->outputMemory(true);
 }
 
+function CommitPerson(){
+    global $DB;
+
+    $record[Person::ID] = $_REQUEST[Person::ID];
+    $record[Person::TITLE] = $_REQUEST[Person::TITLE];
+    $record[Person::FIRSTNAME] = $_REQUEST[Person::FIRSTNAME];
+    $record[Person::LASTNAME] = $_REQUEST[Person::LASTNAME];
+    $record[Person::BIRTHDATE] = $_REQUEST[Person::BIRTHDATE];
+    $record[Person::EMAIL] = $_REQUEST[Person::EMAIL];
+    $record[Person::CELLPHONE] = $_REQUEST[Person::CELLPHONE];
+    $record[Person::DETAILS] = $_REQUEST[Person::DETAILS];
+
+    if($_REQUEST[Person::ID] < 1){
+        $DB->AutoExecute(Person::TABLE_NAME,$record, 'INSERT');
+    }
+    else{
+        $DB->AutoExecute(Person::TABLE_NAME,$record, 'UPDATE', Person::ID."=".$_REQUEST[Person::ID], false);
+    }
+
+    // return the updated person
+    GetPerson();
+}
 
 /*
 function InsertEmployee() {

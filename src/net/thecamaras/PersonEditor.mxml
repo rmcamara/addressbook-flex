@@ -109,7 +109,7 @@
         </mx:FormItem>
         <mx:FormItem label="Birthdate" >
             <mx:DateField id="birth"
-                selectedDate="{_person.birthdate}"
+                selectedDate="{_person.birthdate}" editable="true"
                 width="{EDIT_WIDTH}" styleName="textInput"/>
         </mx:FormItem>
         <mx:FormItem label="Details:" >

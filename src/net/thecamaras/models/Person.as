@@ -13,7 +13,7 @@ package net.thecamaras.models
         private var _details:String;
         private var _places:XMLList;
         
-        protected static var DATE_FORMATER:DateFormatter = new DateFormatter();
+        public static var DATE_FORMATER:DateFormatter = new DateFormatter();
         DATE_FORMATER.formatString = "YYYY-MM-DD";
         
         public function Person(root:XML){

@@ -27,31 +27,41 @@ package net.thecamaras
 			this.connection.resultFormat = HTTPService.RESULT_FORMAT_E4X;
 			this.connection.rootURL = "http://"+Connection.SERVER + "/addressbook/service/";
 		}
+
+		private static function displayError(e:FaultEvent):void {
+            var msg:IMessage = IMessage(e.message);
+            Alert.show(msg.toString(), "Error Connecting to Server");
+        }
 		
 		public function send(url:String, parameters:Object, handler:Function):void {
-		    connection.cancel();
-		    
-		    if (User.instance != null && User.instance.authenticated)
-		    {
-		        parameters.user = User.instance.user;
-		        parameters.pass = User.instance.password;
-		    }
-		    
-		    var handleResults:Function = function(e:ResultEvent):void
-		    {
-		        connection.removeEventListener(ResultEvent.RESULT, handleResults);
-		        handler(e.result);
-		    };
-		    
-		    connection.url = connection.rootURL + url;
-		    connection.addEventListener(ResultEvent.RESULT, handleResults);
-		    connection.addEventListener(FaultEvent.FAULT, displayError);
-		    connection.send(parameters);
+		    send2(url, parameters, handler, displayError);
 		}
 		
-		private function displayError(e:FaultEvent):void {
-		    var msg:IMessage = IMessage(e.message);
-	        Alert.show(msg.toString(), "Error Connecting to Server");
+		public function send2(url:String, parameters:Object, handler:Function, errorHandler:Function):void {
+		    connection.cancel();
+            
+            if (User.instance != null && User.instance.authenticated)
+            {
+                parameters.user = User.instance.user;
+                parameters.pass = User.instance.password;
+            }
+            
+            var handleResults:Function = function(e:ResultEvent):void
+            {
+                connection.removeEventListener(ResultEvent.RESULT, handleResults);
+                handler(e.result);
+            };
+            
+            var errorResults:Function = function(e:ResultEvent):void
+            {
+                connection.removeEventListener(FaultEvent.FAULT, errorResults);
+                errorHandler(e);
+            };
+            
+            connection.url = connection.rootURL + url;
+            connection.addEventListener(ResultEvent.RESULT, handleResults);
+            connection.addEventListener(FaultEvent.FAULT, errorResults);
+            connection.send(parameters);
 		}
 	}
 }

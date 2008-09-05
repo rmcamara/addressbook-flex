@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 29, 2008 at 09:31 AM
+-- Generation Time: Sep 05, 2008 at 01:45 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
 
@@ -19,7 +19,6 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- Table structure for table `links`
 --
 
-DROP TABLE IF EXISTS `links`;
 CREATE TABLE IF NOT EXISTS `links` (
   `people` int(10) unsigned NOT NULL,
   `places` int(10) unsigned NOT NULL,
@@ -32,7 +31,6 @@ CREATE TABLE IF NOT EXISTS `links` (
 -- Table structure for table `people`
 --
 
-DROP TABLE IF EXISTS `people`;
 CREATE TABLE IF NOT EXISTS `people` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `firstname` varchar(100) default NULL,
@@ -44,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `people` (
   `details` text,
   `last-update` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
 
 -- --------------------------------------------------------
 
@@ -52,7 +50,6 @@ CREATE TABLE IF NOT EXISTS `people` (
 -- Table structure for table `places`
 --
 
-DROP TABLE IF EXISTS `places`;
 CREATE TABLE IF NOT EXISTS `places` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
@@ -65,7 +62,21 @@ CREATE TABLE IF NOT EXISTS `places` (
   `details` text,
   `last-update` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `requestlog`
+--
+
+CREATE TABLE IF NOT EXISTS `requestlog` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `RequestDate` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `Source` varchar(12) NOT NULL,
+  `Request` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=22 ;
 
 -- --------------------------------------------------------
 
@@ -73,7 +84,6 @@ CREATE TABLE IF NOT EXISTS `places` (
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `uid` int(11) NOT NULL,
   `username` varchar(100) NOT NULL,

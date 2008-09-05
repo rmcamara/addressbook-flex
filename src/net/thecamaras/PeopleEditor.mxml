@@ -8,6 +8,8 @@
 
     <mx:Script >
         <![CDATA[
+            import mx.messaging.messages.IMessage;
+            import mx.rpc.events.FaultEvent;
             import mx.events.CloseEvent;
             import mx.utils.ObjectUtil;
             import net.thecamaras.models.Person;
@@ -22,10 +24,13 @@
             private var modelSet:Boolean = false;
             
             public function set model (xml:XML):void{
+                if (!initialized){
+                    this.content2.enabled = false;
+                }
                 this.label = "loading..";
                 var args:Object = new Object();
                 args.method = "Person";
-                args.personId = xml.@id;
+                args.id = xml.@id;
                 Connection.instance.send("address.php", args, personLoaded); 
             }
             
@@ -35,6 +40,7 @@
                 this.label = person.firstname;
                 this.titleLabel.text = getName();
                 this.pEditor.person = this.person;
+                this.content2.enabled = true;
             }
             
             private function getName():String {
@@ -47,19 +53,33 @@
             }
             
             private function save():void{
-                trace("Saving...");
                 if (pEditor.isInvalid()){
                     Alert.show("Unable to save: Invalid values in the detail fields", 
                                "Error Saving..."); 
                     return;
                 }
-                
                 var args:Object = new Object();
                 args.method = "SavePerson";
-                args.personId = person.id;
-                Connection.instance.send("address.php", args, personLoaded); 
-                
+                args.id = person.id;
+                args.title = pEditor.title.text;
+                args.firstname = pEditor.firstName.text;
+                args.lastname = pEditor.lastName.text;
+                args.email = pEditor.email.text;
+                args.cell = pEditor.cellphone.text;
+                args.birth = Person.DATE_FORMATER.format(pEditor.birth.text);
+                args.details = pEditor.details.text;
+                Connection.instance.send2("address.php", args, saveComplete, saveFailed);
+                this.content2.enabled = false;
+            }
+            
+            private function saveComplete(result:XML):void{
+                personLoaded(result);
                 pEditor.dirty = false;
+            }
+            
+            private function saveFailed(e:FaultEvent):void{
+                var msg:IMessage = IMessage(e.message);
+                Alert.show(msg.toString(), "Error saving");
             }
             
             private function close():void{
@@ -90,7 +110,8 @@
             text="{getName()}" >
             
     </mx:Label>
-    <mx:VDividedBox x="0" y="0" height="90%" width="100%">
+    <mx:VDividedBox id="content2" 
+        x="0" y="0" height="90%" width="100%">
         <mx:HDividedBox width="100%" height="60%">
             <mx:TitleWindow id="peopleBox" title="Name" width="50%" height="100%">
             </mx:TitleWindow>
