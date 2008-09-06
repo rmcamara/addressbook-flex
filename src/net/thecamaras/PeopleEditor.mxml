@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" icon="{PERSON_ICON}" label="New" xmlns:thecamaras="net.thecamaras.*">
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:thecamaras="net.thecamaras.*"
+    icon="{PERSON_ICON}" label="New" 
+    paddingRight="10" paddingBottom="10" paddingLeft="10">
+    
     <mx:Style >        
         .personTitle {
-            font-size:30;   
+            font-size:30;
+            text-align:center;
         }
     </mx:Style>
 
     <mx:Script >
         <![CDATA[
+            import net.thecamaras.models.BaseModel;
             import mx.messaging.messages.IMessage;
             import mx.rpc.events.FaultEvent;
             import mx.events.CloseEvent;
@@ -15,17 +22,15 @@
             import net.thecamaras.models.Person;
             import mx.controls.Alert;
             
-            
             [Embed(source="assets/person.png")]
             private static const PERSON_ICON:Class;
             
             [Bindable]
             private var person:Person;
-            private var modelSet:Boolean = false;
-            
+
             public function set model (xml:XML):void{
                 if (!initialized){
-                    this.content2.enabled = false;
+                    this.busyContainer.enabled = false;
                 }
                 this.label = "loading..";
                 var args:Object = new Object();
@@ -34,24 +39,46 @@
                 Connection.instance.send("address.php", args, personLoaded); 
             }
             
+            /**
+             * Handles the loading of the Person model from the xml returned by the service call.
+             * 
+             * @param xml The xml results of the service request. 
+             */  
             private function personLoaded(xml:XML):void{
                 this.person = new Person(xml.data.Person[0]);
-                this.modelSet = true;
                 this.label = person.firstname;
-                this.titleLabel.text = getName();
+                this.nameHeader.text = person.firstname + ' ' + person.lastname;
                 this.pEditor.person = this.person;
-                this.content2.enabled = true;
+                this.personView.source = xml.data.Person[0];
+                this.busyContainer.enabled = true;
             }
             
-            private function getName():String {
-                if (person != null){
-                    return person.firstname + ' ' + person.lastname;
+            /**
+             * User requests the closing of this people editor. 
+             */ 
+            private function close():void{
+                if (pEditor.dirty){
+                    Alert.show("You have unsaved changes. Do you wish to close?", "Close", 
+                    Alert.OK | Alert.CANCEL, this, doClose, null, Alert.CANCEL);     
                 }
                 else{
-                    return "New Person";
+                    doClose(new CloseEvent(CloseEvent.CLOSE, false, false, Alert.OK));
                 }
             }
             
+            private function doClose(e:CloseEvent):void{
+                if (e.detail != Alert.OK){
+                        return;
+                    }
+                    
+                    // Should probally fire an event requesting close
+                    this.parent.removeChild(this);
+            }
+            
+            /**
+             * User has requested a save to happen. Reads out all the values from the person
+             * editor and sends them to the service call. 
+             */  
             private function save():void{
                 if (pEditor.isInvalid()){
                     Alert.show("Unable to save: Invalid values in the detail fields", 
@@ -66,62 +93,55 @@
                 args.lastname = pEditor.lastName.text;
                 args.email = pEditor.email.text;
                 args.cell = pEditor.cellphone.text;
-                args.birth = Person.DATE_FORMATER.format(pEditor.birth.text);
+                // Reformat the date to one that php/mysql can understand
+                args.birth = BaseModel.DATE_FORMATER.format(pEditor.birth.text);
                 args.details = pEditor.details.text;
                 Connection.instance.send2("address.php", args, saveComplete, saveFailed);
-                this.content2.enabled = false;
+                this.busyContainer.enabled = false;
             }
             
+            /**
+             * Handle a succesfull save completion request. 
+             */  
             private function saveComplete(result:XML):void{
                 personLoaded(result);
                 pEditor.dirty = false;
             }
             
+            /**
+             * Custom handler to handle a failed save attempt. 
+             */  
             private function saveFailed(e:FaultEvent):void{
                 var msg:IMessage = IMessage(e.message);
                 Alert.show(msg.toString(), "Error saving");
             }
-            
-            private function close():void{
-                if (pEditor.dirty){
-                    Alert.show("You have unsaved changes. Do you wish to close?", "Close", 
-                    Alert.OK | Alert.CANCEL, this, doClose, null, Alert.CANCEL);     
-                }
-                else{
-                    doClose(new CloseEvent(CloseEvent.CLOSE, false, false, Alert.OK));
-                }
-            }
-            
-            private function doClose(e:CloseEvent):void{
-                if (e.detail != Alert.OK){
-                    return;
-                }
-                
-                // Should probally fire an event requesting close
-                this.parent.removeChild(this);
-            }
-            
         ]]>
     </mx:Script>
     
-    
-    <mx:Label id="titleLabel" 
+    <mx:Label id="nameHeader" 
             styleName="personTitle" 
-            text="{getName()}" >
+            text="New Person" width="100%">
             
     </mx:Label>
-    <mx:VDividedBox id="content2" 
-        x="0" y="0" height="90%" width="100%">
-        <mx:HDividedBox width="100%" height="60%">
-            <mx:TitleWindow id="peopleBox" title="Name" width="50%" height="100%">
+    <mx:HDividedBox id="busyContainer" 
+        height="90%" width="100%">
+        <thecamaras:PersonEditor id="pEditor" 
+            width="50%" height="100%" />
+        <mx:VDividedBox width="50%" height="100%">
+            <mx:TitleWindow id="peopleBox" 
+                title="Name" width="100%" height="40%">
+                <thecamaras:PersonViewer id="personView" 
+                    width="100%" height="100%">
+                    
+                </thecamaras:PersonViewer>
             </mx:TitleWindow>
-            <thecamaras:PersonEditor id="pEditor" width="50%" height="100%" />
-        </mx:HDividedBox>
-        <mx:TextArea id="placeListing" text="test" width="100%" height="40%">
-            
-        </mx:TextArea>
-    </mx:VDividedBox>
-    <mx:HBox width="100%" horizontalAlign="right">
+            <mx:TextArea id="placeListing" 
+                text="test" width="100%" height="60%">
+            </mx:TextArea>
+        </mx:VDividedBox>
+    </mx:HDividedBox>
+    <mx:HBox id="buttonBar"
+        width="100%" horizontalAlign="right">
         <mx:Button id="saveBtn" label="save" click="save();" enabled="{pEditor.dirty}"/>
         <mx:Button id="closeBtn" label="close" click="close();"/>
     </mx:HBox>

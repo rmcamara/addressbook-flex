@@ -10,7 +10,7 @@
         <![CDATA[
             import mx.events.ValidationResultEvent;
             import net.thecamaras.models.Person;
-            public static const EDIT_WIDTH:int = 250;
+            public static const EDIT_WIDTH:int = 280;
             
             [Bindable]
             public var _person:Person = new Person(null);
@@ -115,7 +115,7 @@
         <mx:FormItem label="Details:" >
             <mx:TextArea id="details" 
                 text="{_person.details}"
-                width="{EDIT_WIDTH}" height="175" 
+                width="{EDIT_WIDTH}" height="225" 
                 styleName="textInput"/>
     </mx:FormItem>
 </mx:Form>

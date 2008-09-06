@@ -33,7 +33,7 @@
     <mx:Panel title="Camara Family Address Book"
         titleStyleName="titleStyle"
         width="1024" 
-        height="800"
+        height="700"
         textAlign="center"
         horizontalAlign="center">
         

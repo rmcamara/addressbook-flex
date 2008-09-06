@@ -1,6 +1,6 @@
 package net.thecamaras.models
 {
-    import mx.formatters.PhoneFormatter;
+    import mx.formatters.DateFormatter;
     
     public class BaseModel 
     {
@@ -10,13 +10,16 @@ package net.thecamaras.models
         protected var _lastUpdate:Date;
         
         [Bindable]
+        public var root:XML;
+        
+        [Bindable]
         public var dirty:Boolean = false;
         
-        protected static var PHONE_FORMATER:PhoneFormatter = new PhoneFormatter();
-        PHONE_FORMATER.formatString = "# (###) ###-####";
+        public static var DATE_FORMATER:DateFormatter = new DateFormatter();
+        DATE_FORMATER.formatString = "YYYY-MM-DD";
         
         public function BaseModel(root:XML){
-            super();
+            this.root = root;
             if (root == null){
                 this._id = NEW_ID;
                 this.dirty = true;

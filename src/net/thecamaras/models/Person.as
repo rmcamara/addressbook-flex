@@ -1,6 +1,6 @@
 package net.thecamaras.models
 {
-    import mx.formatters.DateFormatter;
+    import mx.formatters.PhoneFormatter;
     
     public class Person extends BaseModel
     {
@@ -13,8 +13,8 @@ package net.thecamaras.models
         private var _details:String;
         private var _places:XMLList;
         
-        public static var DATE_FORMATER:DateFormatter = new DateFormatter();
-        DATE_FORMATER.formatString = "YYYY-MM-DD";
+        public static var PHONE_FORMATER:PhoneFormatter = new PhoneFormatter();
+        PHONE_FORMATER.formatString = "(###) ###-####";
         
         public function Person(root:XML){
             super(root);

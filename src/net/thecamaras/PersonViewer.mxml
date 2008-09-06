@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Text 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    creationComplete="init()" link="linkHandler(event)">
+    
+    <mx:Script>
+        <![CDATA[
+            import flash.net.navigateToURL;
+            import mx.formatters.DateFormatter;
+            import mx.utils.ObjectUtil;
+            import net.thecamaras.models.BaseModel;
+            import net.thecamaras.models.Person;
+            import mx.binding.utils.BindingUtils;
+            private static const SPACE:String = " ";
+            private static const NEWLINE:String = "<br>";
+            
+            private static const DATE_DISPLAY:DateFormatter = new DateFormatter();
+            DATE_DISPLAY.formatString = "MMMM D, YYYY"; 
+        
+            private var _source:XML = null;
+            
+            [Bindable]
+            public function get source():XML{
+                return _source;
+            }
+            
+            public function set source(arg:XML):void{
+                if (arg.name() != 'Person'){
+                    throw new Error("Not a valid xml snippet");
+                }
+                this._source = arg;
+            }
+            
+            private function updateText(value:String):void{
+                if (source == null){
+                    return;
+                }
+                
+                var results:String = "";
+                
+                if (source.@title != ""){
+                    results += source.@title + SPACE;   
+                }
+                results += source.@firstname + SPACE + source.@lastname + NEWLINE;
+                if (source.@email != ""){
+                    results += "<a href='event:mailto:"+source.@email+"'>"+source.@email+"</a>" + NEWLINE;
+                }
+                
+                if (source.@cell != ""){
+                    results += "Cell: " + Person.PHONE_FORMATER.format(source.@cell) + NEWLINE;
+                }
+                
+                if (source.@birth != ""){   
+                    results += DATE_DISPLAY.format(new Date(Date.parse(source.@birth))) + NEWLINE;
+                }
+                trace(results);
+                this.htmlText = results;
+            }
+            
+            private function init():void{
+                BindingUtils.bindSetter(updateText, this, "source");
+            }
+            
+            private function linkHandler(e:TextEvent):void{
+                trace("opening email link");
+                navigateToURL(new URLRequest(e.text), '_blank')
+            }
+        ]]>
+    </mx:Script>
+</mx:Text>
