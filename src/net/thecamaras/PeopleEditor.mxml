@@ -51,6 +51,15 @@
                 this.pEditor.person = this.person;
                 this.personView.source = xml.data.Person[0];
                 this.busyContainer.enabled = true;
+
+                var pViewer:PlaceViewer;                
+                this.placeListing.removeAllChildren();
+                for each (var place:XML in xml.data.Person.Places.Place){
+                    pViewer = new PlaceViewer();
+                    
+                    this.placeListing.addChild(pViewer);
+                    pViewer.source = place;
+                }
             }
             
             /**
@@ -135,9 +144,9 @@
                     
                 </thecamaras:PersonViewer>
             </mx:TitleWindow>
-            <mx:TextArea id="placeListing" 
-                text="test" width="100%" height="60%">
-            </mx:TextArea>
+            <mx:VBox id="placeListing"
+                width="100%" height="60%">
+            </mx:VBox>
         </mx:VDividedBox>
     </mx:HDividedBox>
     <mx:HBox id="buttonBar"
