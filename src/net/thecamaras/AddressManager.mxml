@@ -24,13 +24,13 @@
                 }
                 else
                 {
-                    editor = new PlaceEditor(event.model); 
+                    //editor = new PlaceEditor(); 
                 }
                 
                 
                 addChild(editor);
                 this.selectedChild = editor;
-                PeopleEditor(editor).model = event.model;
+                PeopleEditor(editor).setId(event.model.@id);
             }
         ]]>
     </mx:Script>

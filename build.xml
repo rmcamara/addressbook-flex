@@ -3,7 +3,7 @@
 	<!-- Load the custom properties -->
 	<loadproperties srcfile="build.properties" />
 	
-	<target name="deploy" depends="php-deploy">
+	<target name="deploy" depends="php-deploy, db.setup, db.data">
 	
 	</target>
 	

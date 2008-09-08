@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init();">
+<mx:Form 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="init();" 
+    implements="net.thecamaras.IEditor">
     <mx:Style >
         .textInput {
             text-align:left;   
@@ -14,9 +17,12 @@
             
             [Bindable]
             public var _person:Person = new Person(null);
+
+            private var _dirty:Boolean = false;
             
             [Bindable]
-            public var dirty:Boolean = false;
+            public function get dirty():Boolean { return _dirty; }
+            public function set dirty(arg:Boolean):void{ _dirty = arg; }
             
             private function init():void{
                 title.addEventListener(Event.CHANGE, makeDirty);

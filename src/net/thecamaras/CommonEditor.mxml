@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:thecamaras="net.thecamaras.*"
+    label="New" 
+    paddingRight="10" paddingBottom="10" paddingLeft="10">
+    
+    <mx:Style >        
+        .Title {
+            font-size:30;
+            text-align:center;
+        }
+    </mx:Style>
+
+    <mx:Script >
+        <![CDATA[
+            import mx.rpc.events.AbstractEvent;
+            import mx.core.UIComponent;
+            import net.thecamaras.models.BaseModel;
+            import mx.messaging.messages.IMessage;
+            import mx.rpc.events.FaultEvent;
+            import mx.events.CloseEvent;
+            import mx.utils.ObjectUtil;
+            import net.thecamaras.models.Person;
+            import mx.controls.Alert;
+            
+            protected var editor:IEditor;
+
+            public function setId (id:int):void{
+                if (!initialized){
+                    this.busyContainer.enabled = false;
+                }
+                this.label = "loading..";
+            }
+            
+            protected function loadModel (xml:XML):void{
+               // does nothing by default
+            }
+            
+            
+            /**
+             * User requests the closing of this people editor. 
+             */ 
+            protected function close():void{
+                if (editor.dirty){
+                    Alert.show("You have unsaved changes. Do you wish to close?", "Close", 
+                    Alert.OK | Alert.CANCEL, this, doClose, null, Alert.CANCEL);     
+                }
+                else{
+                    doClose(new CloseEvent(CloseEvent.CLOSE, false, false, Alert.OK));
+                }
+            }
+            
+            protected function doClose(e:CloseEvent):void{
+                if (e.detail != Alert.OK){
+                        return;
+                    }
+                    
+                    // Should probally fire an event requesting close
+                    this.parent.removeChild(this);
+            }
+            
+            /**
+             * User has requested a save to happen. Reads out all the values from the person
+             * editor and sends them to the service call. 
+             */  
+            protected function save():void{
+                if (editor.isInvalid()){
+                    Alert.show("Unable to save: Invalid values in the detail fields", 
+                               "Error Saving..."); 
+                    return;
+                }
+                var args:Object = new Object();
+                args = buildSaveRequest();
+                Connection.instance.send2("address.php", args, saveComplete, saveFailed);
+                this.busyContainer.enabled = false;
+            }
+            
+            protected function buildSaveRequest():Object{
+                throw new Error("This method should have een overwritten");
+            }
+            
+            /**
+             * Handle a succesfull save completion request. 
+             */  
+            protected function saveComplete(result:XML):void{
+                loadModel(result);
+                editor.dirty = false;
+            }
+            
+            /**
+             * Custom handler to handle a failed save attempt. 
+             */  
+            protected function saveFailed(e:FaultEvent):void{
+                var msg:IMessage = IMessage(e.message);
+                Alert.show(msg.toString(), "Error saving");
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Label id="nameHeader" 
+            styleName="personTitle" 
+            text="New Person" width="100%">
+            
+    </mx:Label>
+    <mx:HDividedBox id="busyContainer" 
+        height="90%" width="100%">
+        <mx:VDividedBox width="50%" height="100%">
+            <mx:TitleWindow id="displayBox" 
+                title="Name" width="100%" height="40%">
+            </mx:TitleWindow>
+            <mx:VBox id="childListing" 
+                width="100%" height="60%">
+            </mx:VBox>
+        </mx:VDividedBox>
+    </mx:HDividedBox>
+    <mx:HBox id="buttonBar"
+        width="100%" horizontalAlign="right">
+        <mx:Button id="saveBtn" label="save" click="save();" enabled="{editor.dirty}"/>
+        <mx:Button id="closeBtn" label="close" click="close();"/>
+    </mx:HBox>
+</mx:VBox>
