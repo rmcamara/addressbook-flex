@@ -125,8 +125,9 @@ function ListAllAddress() {
 function GetPerson() {
     global $DB;
 
-    $query = "SELECT * FROM ".Person::TABLE_NAME.
-             " WHERE id=".$_REQUEST[Person::ID];
+    $fields = array( Person::ID => $_REQUEST[Person::ID]);
+
+    $query = "SELECT * FROM ".Person::TABLE_NAME.generateWhere($fields);
     $results = $DB->Execute($query);
 
     $xml = new XMLWriter();
@@ -170,7 +171,9 @@ function GetPerson() {
 function CommitPerson(){
     global $DB;
 
-    $record[Person::ID] = $_REQUEST[Person::ID];
+    if($_REQUEST[Person::ID] < 1){
+        $record[Person::ID] = $_REQUEST[Person::ID];
+    }
     $record[Person::TITLE] = $_REQUEST[Person::TITLE];
     $record[Person::FIRSTNAME] = $_REQUEST[Person::FIRSTNAME];
     $record[Person::LASTNAME] = $_REQUEST[Person::LASTNAME];
@@ -181,6 +184,11 @@ function CommitPerson(){
 
     if($_REQUEST[Person::ID] < 1){
         $DB->AutoExecute(Person::TABLE_NAME,$record, 'INSERT');
+
+        // update the new id attribute
+        $sql = "select " . Person::ID . " from " . Person::TABLE_NAME . genereateWhere($record) .
+               "Order by " . Person::LAST_UPDATE . " DESC";
+        $_REQUEST[Place::ID] = $DB->GetOne($sql);
     }
     else{
         $DB->AutoExecute(Person::TABLE_NAME,$record, 'UPDATE', Person::ID."=".$_REQUEST[Person::ID], false);
@@ -193,8 +201,8 @@ function CommitPerson(){
 function GetLocation() {
     global $DB;
 
-    $query = "SELECT * FROM ".Place::TABLE_NAME.
-             " WHERE id=".$_REQUEST[Place::ID];
+    $fields = array( Place::ID => $_REQUEST[Place::ID]);
+    $query = "SELECT * FROM ".Place::TABLE_NAME. generateWhere($fields);
     $results = $DB->Execute($query);
 
     $xml = new XMLWriter();
@@ -238,7 +246,9 @@ function GetLocation() {
 function CommitLocation(){
     global $DB;
 
-    $record[Place::ID] = $_REQUEST[Place::ID];
+    if($_REQUEST[Place::ID] > 0){
+        $record[Place::ID] = $_REQUEST[Place::ID];
+    }
     $record[Place::NAME] = $_REQUEST[Place::NAME];
     $record[Place::ADDRESS] = $_REQUEST[Place::ADDRESS];
     $record[Place::ADDRESS2] = $_REQUEST[Place::ADDRESS2];
@@ -250,6 +260,11 @@ function CommitLocation(){
 
     if($_REQUEST[Place::ID] < 1){
         $DB->AutoExecute(Place::TABLE_NAME,$record, 'INSERT');
+
+        // update the id.
+        $sql = "select " . Place::ID . " from " . Place::TABLE_NAME . genereateWhere($record) .
+               "Order by " . Places::LAST_UPDATE . " DESC";
+        $_REQUEST[Place::ID] = $DB->GetOne($sql);
     }
     else{
         $DB->AutoExecute(Place::TABLE_NAME,$record, 'UPDATE', Place::ID."=".$_REQUEST[Place::ID], false);

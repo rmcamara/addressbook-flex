@@ -13,6 +13,19 @@
 
 	$DB = ADONewConnection('mysql');
     $DB->PConnect(HOSTNAME, USERNAME, PASSWORD, DATABASE);
-    $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC; 
-	
+    $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+
+function generateWhere($fields){
+    $results = ' WHERE';
+    if (!is_array($fields)){
+        throw new Exception("Not an array of fields");
+    }
+
+    foreach ($fields as $key => $value){
+        $results .= " ".$key." = ".$value;
+    }
+
+    return $results;
+}
 ?>
