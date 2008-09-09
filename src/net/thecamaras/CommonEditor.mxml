@@ -10,6 +10,25 @@
             font-size:30;
             text-align:center;
         }
+        
+        .DetailTitle {
+            font-size:13;
+            text-align:center;
+        }
+        
+        .DetailRenderer {
+            font-size:16;
+            text-align:center;
+            padding-top:20;
+            padding-left:20;
+            padding-right:20;
+            padding-bottom:20;
+        }
+        
+        .ChildRenderer{
+            font-size:13;
+            text-align:center;
+        }
     </mx:Style>
 
     <mx:Script >
@@ -120,9 +139,11 @@
         height="90%" width="100%">
         <mx:VDividedBox width="50%" height="100%">
             <mx:TitleWindow id="displayBox" 
-                title="Current Details" width="100%" height="40%">
+                title="Current Details" titleStyleName="DetailTitle" styleName="DetailRenderer" 
+                width="100%" height="40%">
             </mx:TitleWindow>
-            <mx:VBox id="childListing" 
+            <mx:VBox id="childListing"
+                styleName="ChildRenderer"
                 width="100%" height="60%">
             </mx:VBox>
         </mx:VDividedBox>

@@ -34,26 +34,31 @@
             
             [Embed(source="assets/place.png")]
             private static const PLACE_ICON:Class;
+            
+            [Embed(source="assets/refresh.jpg")]
+            private static const REFRESH_ICON:Class;
 
             private function init():void {
                 refreshAddress();
                 
                 addressee.doubleClickEnabled=true;
                 addressee.addEventListener(MouseEvent.DOUBLE_CLICK, openEditor);
-                addressee.addEventListener(KeyboardEvent.KEY_DOWN, 
-                    function(e:KeyboardEvent):void{if (e.keyCode == 13) openEditor(e);});
+//                addressee.addEventListener(KeyboardEvent.KEY_DOWN, 
+//                    function(e:KeyboardEvent):void{if (e.keyCode == 13) openEditor(e);});
                 addressee.setFocus();
                 
                 addBtn.addEventListener(MouseEvent.CLICK, newAddress); 
             }
             
             public function refreshAddress():void {
+                this.enabled=false;
                 var args:Object = new Object();
                 args.method = "ListPlaces";
                 Connection.instance.send("address.php", args, populateAddress); 
             }
             
             private function populateAddress(xml:XML):void {
+                this.enabled=true;
                 var data:HierarchicalData = new HierarchicalData(xml.data.children())
                 data.childrenField = "People";
                 placeList = data;
@@ -173,6 +178,9 @@
             change="searchGrid()"/>
         <mx:Button id="search" 
             label="Search" click="searchGrid()"/>
+        <mx:Button id="refresh" 
+            toolTip="Refresh" icon="{REFRESH_ICON}" 
+            click="refreshAddress()"/>
         <mx:HBox 
             width="100%" height="32" 
             verticalAlign="middle" horizontalAlign="right"  
@@ -196,7 +204,7 @@
             <mx:AdvancedDataGridColumn id="nameCol" 
                 headerText="Name" dataField="@name" 
                 labelFunction="displayName" sortCompareFunction="sortByName" 
-                width="40" textAlign="left" sortable="true" />
+                width="25" textAlign="left" sortable="true" />
             <mx:AdvancedDataGridColumn id="addressCol"
                 headerText="Address" dataField="@address" 
                 width="25" textAlign="left"/>
