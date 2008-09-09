@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<thecamaras:CommonEditor
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:thecamaras="net.thecamaras.*"
+    icon="{PLACE_ICON}" >
+    
+    <mx:Style >        
+        .personTitle {
+            font-size:30;
+            text-align:center;
+        }
+    </mx:Style>
+
+    <mx:Script >
+        <![CDATA[
+            import net.thecamaras.models.Place;
+            import net.thecamaras.models.BaseModel;
+            import mx.messaging.messages.IMessage;
+            import mx.rpc.events.FaultEvent;
+            import mx.events.CloseEvent;
+            import mx.utils.ObjectUtil;
+            import mx.controls.Alert;
+            
+            [Embed(source="assets/place.png")]
+            private static const PLACE_ICON:Class;
+            
+            [Bindable]
+            private var location:Place;
+            
+            override protected function createChildren():void{
+                super.createChildren();
+                
+                var pEditor:LocationEditor;
+                pEditor = new LocationEditor();
+                busyContainer.addChildAt(pEditor, 0);
+                pEditor.width = Number("50%");
+                pEditor.height = Number("100%");
+                
+                editor = pEditor;
+            }
+
+            override public function setId (id:int):void{
+                super.setId(id);
+                var args:Object = new Object();
+                args.method = "Place";
+                args.id = id;
+                Connection.instance.send("address.php", args, loadModel); 
+            }
+            
+            /**
+             * Handles the loading of the Person model from the xml returned by the service call.
+             * 
+             * @param xml The xml results of the service request. 
+             */  
+            override protected function loadModel(xml:XML):void{
+                this.location = new Place(xml.data.Place[0]);
+                this.label = location.name;
+                this.nameHeader.text = location.name;
+                LocationEditor(this.editor).location = this.location;
+                busyContainer.enabled = true;
+                
+                // Display the current personel details
+                displayBox.removeAllChildren();
+                PlaceRenderer(displayBox.addChild(new PlaceRenderer())).source = xml.data.Place[0];
+                
+                // establish viewer the possible locations
+                var pViewer:PersonRenderer;                
+                this.childListing.removeAllChildren();
+                for each (var place:XML in xml.data.Place.People.Person){
+                    pViewer = new PersonRenderer();
+                    
+                    this.childListing.addChild(pViewer);
+                    pViewer.source = place;
+                }
+            }
+            
+            /**
+             * User has requested a save to happen. Reads out all the values from the person
+             * editor and sends them to the service call. 
+             */  
+            override protected function buildSaveRequest():Object{
+                var pEditor:LocationEditor = LocationEditor(editor);
+                
+                var args:Object = new Object();
+                args.method = "SavePlace";
+                args.id = location.id;
+                args.name = pEditor.nameTxt.text;
+                args.address = pEditor.addressTxt.text;
+                args.address2 = pEditor.address2Txt.text;
+                args.city = pEditor.cityTxt.text;
+                args.state = pEditor.stateCmb.selectedItem.data;
+                args.zipcode = pEditor.zipcodeTxt.text;
+                args.phone = pEditor.phoneTxt.text;
+                args.details = pEditor.detailsTxt.text;
+                return args;
+            }
+            
+        ]]>
+    </mx:Script>
+</thecamaras:CommonEditor>

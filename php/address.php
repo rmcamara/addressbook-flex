@@ -22,6 +22,12 @@ switch (@$_REQUEST["method"]) {
     case "SavePerson":
         CommitPerson();
         break;
+    case "Place":
+        GetLocation();
+        break;
+    case "SavePlace":
+        CommitLocation();
+        break;
 //    case "InsertAddressee":
 //        $ret = InsertAddress();
 //        break;
@@ -182,6 +188,75 @@ function CommitPerson(){
 
     // return the updated person
     GetPerson();
+}
+
+function GetLocation() {
+    global $DB;
+
+    $query = "SELECT * FROM ".Place::TABLE_NAME.
+             " WHERE id=".$_REQUEST[Place::ID];
+    $results = $DB->Execute($query);
+
+    $xml = new XMLWriter();
+    $xml->openMemory();
+    $xml->setIndent(true);
+    $xml->startDocument('1.0','UTF-8');
+    $xml->startElement('response');
+    $xml->startElement('data');
+
+    while ($place = $results->FetchRow()) {
+        $xml->startElement('Place');
+        foreach ($place as $key => $value){
+            $xml->writeAttribute($key, GetValueString($key, $value, $results));
+        }
+
+        $pquery = "Select * ".
+                  "FROM ".Person::TABLE_NAME.
+                  " LEFT JOIN links ON ".Person::TABLE_NAME.'.'.Person::ID."=links.people ".
+                  "WHERE links.places=" . $place['id'];
+        $people = $DB->Execute($pquery);
+
+        $xml->startElement('People');
+        while ($person = $people->FetchRow()) {
+            $xml->startElement('Person');
+            foreach ($person as $key => $value){
+                $xml->writeAttribute($key, GetValueString($key, $value, $results));
+            }
+            $xml->endElement(); // end person
+        }
+        $xml->endElement();
+        $xml->endElement();
+    }
+
+    $xml->endElement(); // end data
+    $xml->endElement(); // end response
+    $xml->endDocument();
+    header("Content-type: text/xml");
+    print $xml->outputMemory(true);
+}
+
+function CommitLocation(){
+    global $DB;
+
+    $record[Place::ID] = $_REQUEST[Place::ID];
+    $record[Place::NAME] = $_REQUEST[Place::NAME];
+    $record[Place::ADDRESS] = $_REQUEST[Place::ADDRESS];
+    $record[Place::ADDRESS2] = $_REQUEST[Place::ADDRESS2];
+    $record[Place::CITY] = $_REQUEST[Place::CITY];
+    $record[Place::STATE] = $_REQUEST[Place::STATE];
+    $record[Place::ZIPCODE] = $_REQUEST[Place::ZIPCODE];
+    $record[Place::PHONE] = $_REQUEST[Place::PHONE];
+    $record[Place::DETAILS] = $_REQUEST[Place::DETAILS];
+
+    if($_REQUEST[Place::ID] < 1){
+        $DB->AutoExecute(Place::TABLE_NAME,$record, 'INSERT');
+    }
+    else{
+        $DB->AutoExecute(Place::TABLE_NAME,$record, 'UPDATE', Place::ID."=".$_REQUEST[Place::ID], false);
+    }
+
+    // return the updated person
+    GetLocation();
 }
 
 /*

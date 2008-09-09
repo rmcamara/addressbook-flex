@@ -18,19 +18,18 @@
                 
                 var editor:Container;
                 
-                if (event.model.name() == "Person")
-                {
+                if (event.model.name() == "Person"){
                     editor = new PeopleEditor();
+                    addChild(editor);
+                    this.selectedChild = editor;
+                    PeopleEditor(editor).setId(event.model.@id);    
                 }
-                else
-                {
-                    //editor = new PlaceEditor(); 
+                else{
+                    editor = new PlaceEditor();
+                    addChild(editor);
+                    this.selectedChild = editor;
+                    PlaceEditor(editor).setId(event.model.@id); 
                 }
-                
-                
-                addChild(editor);
-                this.selectedChild = editor;
-                PeopleEditor(editor).setId(event.model.@id);
             }
         ]]>
     </mx:Script>

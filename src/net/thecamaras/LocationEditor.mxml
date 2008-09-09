@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="init();" 
+    implements="net.thecamaras.IEditor">
+    <mx:Style >
+        .textInput {
+            text-align:left;   
+        }
+    </mx:Style>
+
+    <mx:Script >
+        <![CDATA[
+            import mx.binding.utils.BindingUtils;
+            import mx.events.PropertyChangeEventKind;
+            import mx.events.PropertyChangeEvent;
+            import net.thecamaras.models.Place;
+            import mx.events.ValidationResultEvent;
+            import net.thecamaras.models.Person;
+            public static const EDIT_WIDTH:int = 280;
+            
+            [Bindable]
+            public var _location:Place = new Place(null);
+
+            private var _dirty:Boolean = false;
+            
+            [Bindable]
+            public function get dirty():Boolean { return _dirty; }
+            public function set dirty(arg:Boolean):void
+            { 
+                var prop:PropertyChangeEvent = 
+                    PropertyChangeEvent.createUpdateEvent(this, "dirty", _dirty, arg);
+                _dirty = arg;
+                dispatchEvent(prop);
+            }
+            
+            private function init():void{
+                nameTxt.addEventListener(Event.CHANGE, makeDirty);
+                addressTxt.addEventListener(Event.CHANGE, makeDirty);
+                address2Txt.addEventListener(Event.CHANGE, makeDirty);
+                cityTxt.addEventListener(Event.CHANGE, makeDirty);
+                stateCmb.addEventListener(Event.CHANGE, makeDirty);
+                zipcodeTxt.addEventListener(Event.CHANGE, makeDirty);
+                phoneTxt.addEventListener(Event.CHANGE, makeDirty);
+                detailsTxt.addEventListener(Event.CHANGE, makeDirty);
+                
+                BindingUtils.bindSetter(loadState, this, "_location");
+            }
+            
+            private function loadState(location:Place):void{
+                var i:int;
+                i = 0;
+                for each (var x:Object in stateCmb.dataProvider){
+                    if (x.data == _location.state){
+                        stateCmb.selectedIndex = i;
+                        break;
+                    }
+                    i++;
+                }
+            }
+            
+            private function makeDirty(e:Event):void{
+                dirty = true;
+            }
+            
+            public function set location(location:Place):void {
+                this._location = location; 
+            }
+            
+            public function isInvalid():Boolean{
+                var vResult:ValidationResultEvent;
+                
+                return false;
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:StringValidator id="nameVal" 
+        source="{nameTxt}" property="text" maxLength="100" minLength="1" />
+    <mx:StringValidator id="addressVal" 
+        source="{addressTxt}" property="text" minLength="1" />
+    <mx:StringValidator id="cityVal" 
+        source="{cityTxt}" property="text" maxLength="100" minLength="1" />
+    <mx:ZipCodeValidator id="zipcodeVal" 
+        source="{zipcodeTxt}" property="text" />
+    <mx:PhoneNumberValidator id="phoneVal" 
+        source="{phoneTxt}" property="text" required="false" />    
+    
+    <mx:FormHeading label="Edit Details...." />
+        <mx:FormItem label="Name:">
+            <mx:TextInput id="nameTxt" 
+                text="{_location.name}"
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Address:">
+            <mx:TextInput id="addressTxt"
+                text="{_location.address}" 
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Address2:" >
+            <mx:TextInput id="address2Txt" 
+                text="{_location.address2}"
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="City:">
+            <mx:TextInput id="cityTxt"
+                text="{_location.city}"
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="State:" >
+            <mx:ComboBox id="stateCmb" 
+                dataProvider="{Constants.STATE_LIST}"
+                selectedIndex="{Constants.STATE_LIST.indexOf(_location.state)}"
+                width="{EDIT_WIDTH}" styleName="textInput" >
+            </mx:ComboBox>
+        </mx:FormItem>
+        <mx:FormItem label="Zipcode:">
+            <mx:TextInput id="zipcodeTxt"
+                text="{_location.zipcode}"
+                maxChars="5"
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Phone:">
+            <mx:TextInput id="phoneTxt"
+                text="{_location.phone}"
+                width="{EDIT_WIDTH}" styleName="textInput"/>
+        </mx:FormItem>
+        <mx:FormItem label="Details:" >
+            <mx:TextArea id="detailsTxt" 
+                text="{_location.details}"
+                width="{EDIT_WIDTH}" height="225" 
+                styleName="textInput"/>
+    </mx:FormItem>
+</mx:Form>
