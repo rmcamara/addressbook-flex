@@ -28,8 +28,8 @@ package net.thecamaras
 			this.connection.rootURL = "http://"+Connection.SERVER + "/addressbook/service/";
 		}
 
-		private static function displayError(e:FaultEvent):void {
-            var msg:IMessage = IMessage(e.message);
+		private static function displayError(event:FaultEvent):void {
+            var msg:IMessage = IMessage(event.message);
             Alert.show(msg.toString(), "Error Connecting to Server");
         }
 		
@@ -38,6 +38,9 @@ package net.thecamaras
 		}
 		
 		public function send2(url:String, parameters:Object, handler:Function, errorHandler:Function):void {
+		    var handleResults:Function;
+		    var errorResults:Function
+		    
 		    connection.cancel();
             
             if (User.instance != null && User.instance.authenticated)
@@ -46,14 +49,16 @@ package net.thecamaras
                 parameters.pass = User.instance.password;
             }
             
-            var handleResults:Function = function(e:ResultEvent):void
+            handleResults = function(e:ResultEvent):void
             {
                 connection.removeEventListener(ResultEvent.RESULT, handleResults);
+                connection.removeEventListener(FaultEvent.FAULT, errorResults);
                 handler(e.result);
             };
             
-            var errorResults:Function = function(e:ResultEvent):void
+            errorResults = function(e:FaultEvent):void
             {
+                connection.removeEventListener(ResultEvent.RESULT, handleResults);
                 connection.removeEventListener(FaultEvent.FAULT, errorResults);
                 errorHandler(e);
             };

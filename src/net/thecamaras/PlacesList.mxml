@@ -8,6 +8,9 @@
     
     <mx:Script>
         <![CDATA[
+            import net.thecamaras.events.CreateEditorEvent;
+            import net.thecamaras.models.Place;
+            import net.thecamaras.models.Person;
             import mx.validators.EmailValidator;
             import net.thecamaras.events.OpenEditorEvent;
             import mx.collections.IHierarchicalCollectionView;
@@ -20,8 +23,8 @@
             import mx.rpc.events.ResultEvent;
             import mx.controls.Alert;
             
-            public static const TYPE_PLACE:String = "Place";
-            public static const TYPE_PERSON:String = "Person";
+            public static const TYPE_PLACE:String = Place.PLACE_TYPE;
+            public static const TYPE_PERSON:String =  Person.PERSON_TYPE;
             
             [Bindable]
             public var placeList:HierarchicalData; // XML list of places
@@ -41,7 +44,7 @@
                     function(e:KeyboardEvent):void{if (e.keyCode == 13) openEditor(e);});
                 addressee.setFocus();
                 
-                
+                addBtn.addEventListener(MouseEvent.CLICK, newAddress); 
             }
             
             public function refreshAddress():void {
@@ -147,6 +150,10 @@
                     Alert.show("Nothing selected. Please select something to open");
                 }
                 this.dispatchEvent(new OpenEditorEvent(selected));
+            }
+            
+            private function newAddress(e:Event):void{
+                this.dispatchEvent(new CreateEditorEvent(TYPE_PLACE));
             }
         ]]>
     </mx:Script>

@@ -11,6 +11,7 @@
 
     <mx:Script >
         <![CDATA[
+            import net.thecamaras.models.BaseModel;
             import mx.binding.utils.BindingUtils;
             import mx.events.PropertyChangeEventKind;
             import mx.events.PropertyChangeEvent;
@@ -25,7 +26,7 @@
             private var _dirty:Boolean = false;
             
             [Bindable]
-            public function get dirty():Boolean { return _dirty; }
+            public function get dirty():Boolean { return _dirty || _location.id == BaseModel.NEW_ID; }
             public function set dirty(arg:Boolean):void
             { 
                 var prop:PropertyChangeEvent = 
@@ -67,10 +68,36 @@
                 this._location = location; 
             }
             
-            public function isInvalid():Boolean{
+            public function validate():String{
                 var vResult:ValidationResultEvent;
+                var result:String = "";
                 
-                return false;
+                vResult = nameVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    result += vResult.message + "\n";
+                }
+                
+                vResult = addressVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    result += vResult.message + "\n";
+                }
+                
+                vResult = cityVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    result += vResult.message + "\n";
+                }
+                
+                vResult = zipcodeVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    result += vResult.message + "\n";
+                }
+                
+                vResult = phoneVal.validate();
+                if (vResult.type == ValidationResultEvent.INVALID){
+                    result += vResult.message + "\n";
+                }
+                
+                return result;
             }
         ]]>
     </mx:Script>

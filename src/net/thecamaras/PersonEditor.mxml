@@ -42,34 +42,35 @@
                 this._person = person; 
             }
             
-            public function isInvalid():Boolean{
+            public function validate():String{
+                var result:String = "";
                 var vResult:ValidationResultEvent;
                 vResult = firstNameVal.validate();
                 if (vResult.type == ValidationResultEvent.INVALID){
-                    return true;
+                    result += vResult.message + "\n";
                 }
                 
                 vResult = lastNameVal.validate();
                 if (vResult.type == ValidationResultEvent.INVALID){
-                    return true;
+                    result += vResult.message + "\n";
                 }
                 
                 vResult = emailVal.validate();
                 if (vResult.type == ValidationResultEvent.INVALID){
-                    return true;
+                    result += vResult.message + "\n";
                 }
                 
                 vResult = cellVal.validate();
                 if (vResult.type == ValidationResultEvent.INVALID){
-                    return true;
+                    result += vResult.message + "\n";
                 }
                 
                 vResult = birthDateVal.validate();
                 if (vResult.type == ValidationResultEvent.INVALID){
-                    return true;
+                    result += vResult.message + "\n";
                 }
                 
-                return false;
+                return result;
             }
         ]]>
     </mx:Script>

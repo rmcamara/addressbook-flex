@@ -3,7 +3,9 @@ package net.thecamaras.models
     import mx.formatters.PhoneFormatter;
     import mx.formatters.ZipCodeFormatter;
     
-    public class Place extends BaseModel{       
+    public class Place extends BaseModel{   
+        public static const PLACE_TYPE:String = "Place";
+            
         private var _name:String;
         private var _address:String;
         private var _address2:String;

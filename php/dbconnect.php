@@ -22,8 +22,24 @@ function generateWhere($fields){
         throw new Exception("Not an array of fields");
     }
 
+    unset($seen);
     foreach ($fields as $key => $value){
-        $results .= " ".$key." = ".$value;
+        if(!$value){
+            continue;
+        }
+        if (isset($seen)){
+            $results .= " AND ";
+        }
+
+        $results .= " ".$key."=";
+        if (!is_numeric($value)){
+            $results .= "'";
+        }
+        $results .= $value;
+        if (!is_numeric($value)){
+            $results .= "'";
+        }
+        $seen = true;
     }
 
     return $results;

@@ -35,7 +35,8 @@
                 }
                 this.label = "loading..";
                 
-                BindingUtils.bindSetter(enableSave, editor, "dirty"); 
+                BindingUtils.bindSetter(enableSave, editor, "dirty");
+                saveBtn.enabled = false; 
             }
             
             private function enableSave(e:Boolean):void{
@@ -74,8 +75,10 @@
              * editor and sends them to the service call. 
              */  
             protected function save():void{
-                if (editor.isInvalid()){
-                    Alert.show("Unable to save: Invalid values in the detail fields", 
+                var validation:String;
+                validation = editor.validate();
+                if (validation != ""){
+                    Alert.show("Unable to save: Invalid values in the detail fields\n\n" + validation, 
                                "Error Saving..."); 
                     return;
                 }
@@ -95,14 +98,15 @@
             protected function saveComplete(result:XML):void{
                 loadModel(result);
                 editor.dirty = false;
+                saveBtn.enabled = false;
             }
             
             /**
              * Custom handler to handle a failed save attempt. 
              */  
-            protected function saveFailed(e:FaultEvent):void{
-                var msg:IMessage = IMessage(e.message);
-                Alert.show(msg.toString(), "Error saving");
+            protected function saveFailed(event:FaultEvent):void{
+                var msg:IMessage = IMessage(event.message);
+                Alert.show(ObjectUtil.toString(msg.body), "Error saving");
             }
         ]]>
     </mx:Script>

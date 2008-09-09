@@ -4,6 +4,8 @@ package net.thecamaras.models
     
     public class Person extends BaseModel
     {
+        public static const PERSON_TYPE:String = "Person";
+        
         private var _firstname:String;
         private var _lastname:String;
         private var _title:String;

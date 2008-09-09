@@ -7,18 +7,20 @@
     
     <mx:Script>
         <![CDATA[
+            import net.thecamaras.models.Person;
+            import net.thecamaras.events.CreateEditorEvent;
             import mx.core.Container;
             import mx.core.UIComponent;
             import net.thecamaras.events.OpenEditorEvent;
             private function init():void {
                 places.addEventListener(OpenEditorEvent.OPEN_EDITOR_EVENT, openEditor);
+                places.addEventListener(CreateEditorEvent.CREATE_EDITOR_EVENT, newEditor);
             }
             
             private function openEditor(event:OpenEditorEvent):void{
-                
                 var editor:Container;
                 
-                if (event.model.name() == "Person"){
+                if (event.model.name() == Person.PERSON_TYPE){
                     editor = new PeopleEditor();
                     addChild(editor);
                     this.selectedChild = editor;
@@ -30,6 +32,19 @@
                     this.selectedChild = editor;
                     PlaceEditor(editor).setId(event.model.@id); 
                 }
+            }
+            
+            private function newEditor(e:CreateEditorEvent):void{
+                var editor:Container;
+                
+                if (e.mode == Person.PERSON_TYPE){
+                    editor = new PeopleEditor();
+                }
+                else{
+                    editor = new PlaceEditor();
+                }
+                addChild(editor);
+                this.selectedChild = editor;
             }
         ]]>
     </mx:Script>

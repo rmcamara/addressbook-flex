@@ -4,6 +4,6 @@ package net.thecamaras
     {
         function get dirty():Boolean;
         function set dirty(arg:Boolean):void;
-        function isInvalid():Boolean;
+        function validate():String;
     }
 }

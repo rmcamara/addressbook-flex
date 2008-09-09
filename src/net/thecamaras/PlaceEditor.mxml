@@ -25,7 +25,7 @@
             private static const PLACE_ICON:Class;
             
             [Bindable]
-            private var location:Place;
+            private var location:Place = new Place(null);
             
             override protected function createChildren():void{
                 super.createChildren();

@@ -186,7 +186,7 @@ function CommitPerson(){
         $DB->AutoExecute(Person::TABLE_NAME,$record, 'INSERT');
 
         // update the new id attribute
-        $sql = "select " . Person::ID . " from " . Person::TABLE_NAME . genereateWhere($record) .
+        $sql = "select " . Person::ID . " from " . Person::TABLE_NAME . generateWhere($record) .
                "Order by " . Person::LAST_UPDATE . " DESC";
         $_REQUEST[Place::ID] = $DB->GetOne($sql);
     }
@@ -221,7 +221,7 @@ function GetLocation() {
         $pquery = "Select * ".
                   "FROM ".Person::TABLE_NAME.
                   " LEFT JOIN links ON ".Person::TABLE_NAME.'.'.Person::ID."=links.people ".
-                  "WHERE links.places=" . $place['id'];
+                  "WHERE links.places=" . $place[Place::ID];
         $people = $DB->Execute($pquery);
 
         $xml->startElement('People');
@@ -262,8 +262,8 @@ function CommitLocation(){
         $DB->AutoExecute(Place::TABLE_NAME,$record, 'INSERT');
 
         // update the id.
-        $sql = "select " . Place::ID . " from " . Place::TABLE_NAME . genereateWhere($record) .
-               "Order by " . Places::LAST_UPDATE . " DESC";
+        $sql = "select " . Place::ID . " from " . Place::TABLE_NAME . generateWhere($record) .
+               " Order by `" . Place::LAST_UPDATE . "` DESC";
         $_REQUEST[Place::ID] = $DB->GetOne($sql);
     }
     else{
