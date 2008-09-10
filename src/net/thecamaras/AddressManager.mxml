@@ -15,6 +15,8 @@
             private function init():void {
                 places.addEventListener(OpenEditorEvent.OPEN_EDITOR_EVENT, openEditor);
                 places.addEventListener(CreateEditorEvent.CREATE_EDITOR_EVENT, newEditor);
+                people.addEventListener(OpenEditorEvent.OPEN_EDITOR_EVENT, openEditor);
+                people.addEventListener(CreateEditorEvent.CREATE_EDITOR_EVENT, newEditor);
             }
             
             private function openEditor(event:OpenEditorEvent):void{
@@ -51,6 +53,9 @@
 
     <camara:PlacesList id="places"
         label="Places" >
-    </camara:PlacesList>        
+    </camara:PlacesList>
+    <camara:PeopleList id="people"
+        label="People" >
+    </camara:PeopleList>   
 
 </mx:TabNavigator>

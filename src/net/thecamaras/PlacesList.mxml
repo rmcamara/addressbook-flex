@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <camara:AbstractListing
     xmlns:mx="http://www.adobe.com/2006/mxml"
-    xmlns:camara="net.thecamaras.*">
+    xmlns:camara="net.thecamaras.*" 
+    creationComplete="addColumns()"
+    preinitialize="preInitializeHandler()">
     
     <mx:Script>
         <![CDATA[
@@ -20,6 +22,66 @@
             import mx.rpc.events.ResultEvent;
             import mx.controls.Alert;
             
+            private function preInitializeHandler():void{
+                addLabel = "New Place";
+            }
+            
+            protected function addColumns():void{
+                
+                var columns:Array = new Array();                
+                var col:AdvancedDataGridColumn;
+                
+                col = new AdvancedDataGridColumn("");
+                col.resizable = false;
+                col.sortable = false;
+                columns.push(col);
+                
+                col = new AdvancedDataGridColumn("Location Name");
+                col.labelFunction = displayName;
+                col.dataField = "@name";
+                col.sortCompareFunction = sortByName;
+                col.sortable = true;
+                columns.push(col);
+                
+                col = new AdvancedDataGridColumn("Address");
+                col.dataField = "@address";
+                columns.push(col);
+                
+                col = new AdvancedDataGridColumn("Address2");
+                col.dataField = "@address2";
+                columns.push(col);
+                
+                col = new AdvancedDataGridColumn("City");
+                col.dataField = "@city";
+                col.setStyle("textAlign", "center");
+                columns.push(col);
+                
+                col = new AdvancedDataGridColumn("State");
+                col.dataField = "@state";
+                col.setStyle("textAlign", "center");
+                columns.push(col);
+                
+                col = new AdvancedDataGridColumn("Zipcode");
+                col.dataField = "@zipcode";
+                col.setStyle("textAlign", "center");
+                columns.push(col);
+                 
+                var width:Number;
+                width = listingTable.width;
+                columns[0].width = 45;
+                width -= columns[0].width;
+                columns[1].width = width * .25;
+                columns[2].width = width * .25;
+                columns[3].width = width * .17;
+                columns[4].width = width * .15;
+                columns[5].width = width * .08;
+                columns[6].width = width * .10;
+                
+                listingTable.columns = columns;
+                listingTable.treeColumn = columns[0];
+                listingTable.invalidateSize();
+            }
+            
             override public function refreshModels():void {
                 super.refreshModels();
                 var args:Object = new Object();
@@ -35,40 +97,8 @@
             override protected function newItemRequest(event:Event):void{
                 this.dispatchEvent(new CreateEditorEvent(TYPE_PLACE));
             }
-            
-            override protected function createChildren():void{
-                modelTable = addressee;
-            }
         ]]>
     </mx:Script>
     
-    <mx:AdvancedDataGrid id="addressee"
-        width="100%" height="90%"
-        designViewDataType="tree" dataProvider="{modelList}" 
-        alternatingItemColors="{altColors}" treeColumn="{treeCol}" 
-        groupIconFunction="groupIconChooser"
-        iconFunction="iconChooser"
-        selectionMode="singleRow" editable="false" sortExpertMode="true" >
-        <mx:columns >
-            <mx:AdvancedDataGridColumn id="treeCol" 
-                width="7"
-                sortable="false" editable="false" resizable="false" />
-            <mx:AdvancedDataGridColumn id="nameCol" 
-                headerText="Name" dataField="@name" 
-                labelFunction="displayName" sortCompareFunction="sortByName" 
-                width="25" textAlign="left" sortable="true" />
-            <mx:AdvancedDataGridColumn id="addressCol"
-                headerText="Address" dataField="@address" 
-                width="25" textAlign="left"/>
-            <mx:AdvancedDataGridColumn  id="address2Col" 
-                headerText="Address 2" dataField="@address2" 
-                width="25" textAlign="left"/>
-            <mx:AdvancedDataGridColumn id="cityCol"
-                headerText="City" dataField="@city" width="15"/>
-            <mx:AdvancedDataGridColumn id="stateCol"
-                headerText="State" dataField="@state" width="8"/>
-            <mx:AdvancedDataGridColumn id="zipcodeCol"
-                headerText="Zipcode" dataField="@zipcode" width="12"/>
-        </mx:columns>
-    </mx:AdvancedDataGrid>
+    
 </camara:AbstractListing>

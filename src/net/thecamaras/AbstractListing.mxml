@@ -19,6 +19,7 @@
             import mx.controls.AdvancedDataGrid;
             import mx.collections.HierarchicalData;
             import mx.events.DynamicEvent;
+            import mx.core.ScrollPolicy;
         
             import mx.rpc.events.ResultEvent;
             import mx.controls.Alert;
@@ -38,16 +39,17 @@
             [Embed(source="assets/refresh.jpg")]
             protected static const REFRESH_ICON:Class;
             
-            protected var modelTable:AdvancedDataGrid;
+            [Bindable]
+            protected var addLabel:String = "New thing";
 
             private function init():void {
                 refreshModels();
                 
-                modelTable.doubleClickEnabled=true;
-                modelTable.addEventListener(MouseEvent.DOUBLE_CLICK, openEditor);
-                modelTable.addEventListener(KeyboardEvent.KEY_DOWN, 
+                listingTable.doubleClickEnabled=true;
+                listingTable.addEventListener(MouseEvent.DOUBLE_CLICK, openEditor);
+                listingTable.addEventListener(KeyboardEvent.KEY_DOWN, 
                     function(e:KeyboardEvent):void{if (e.keyCode == 13) openEditor(e);});
-                modelTable.setFocus();
+                listingTable.setFocus();
                 
                 addBtn.addEventListener(MouseEvent.CLICK, newItemRequest); 
             }
@@ -64,7 +66,7 @@
             
             protected function searchGrid():void {
                 var provider:IHierarchicalCollectionView = 
-                    IHierarchicalCollectionView(modelTable.dataProvider);
+                    IHierarchicalCollectionView(listingTable.dataProvider);
                 provider.filterFunction = filterText;
                 provider.refresh();
             }
@@ -103,7 +105,7 @@
                     return xml.@name;
                 }
                 else{
-                    return xml.@firstname + " " + xml.@lastname;
+                    return xml.@firstname;
                 }
             }
             
@@ -148,7 +150,7 @@
             }
             
             protected function openEditor(event:Event):void{
-                var selected:XML = XML(modelTable.selectedItem);
+                var selected:XML = XML(listingTable.selectedItem);
                 if (selected == null){
                     Alert.show("Nothing selected. Please select something to open");
                 }
@@ -184,7 +186,16 @@
             verticalAlign="middle" horizontalAlign="right"  
             horizontalGap="0" paddingRight="20">
             <mx:Button id="addBtn" 
-                label="Add new Address"  />
+                label="{addLabel}"  />
         </mx:HBox> 
-    </mx:HBox>        
+    </mx:HBox>
+    
+    <mx:AdvancedDataGrid id="listingTable"
+        width="100%" height="90%" horizontalScrollPolicy="{ScrollPolicy.OFF}"
+        designViewDataType="tree" rowHeight="20"
+        dataProvider="{modelList}"
+        alternatingItemColors="{altColors}" textAlign="left"
+        groupIconFunction="groupIconChooser" iconFunction="iconChooser"
+        selectionMode="singleRow" editable="false" sortExpertMode="true" >
+    </mx:AdvancedDataGrid>     
 </mx:VBox>
