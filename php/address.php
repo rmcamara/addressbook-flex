@@ -28,11 +28,14 @@ switch (@$_REQUEST["method"]) {
     case "SavePlace":
         CommitLocation();
         break;
+    case "ListPeople":
+        ListPeople();
+        break;
 //    case "InsertAddressee":
 //        $ret = InsertAddress();
 //        break;
     default:
-        ListAllAddress();
+        throw new Exception("Unrecognized Request:" . $_REQUEST["method"]);
         break;
 }
 
@@ -107,6 +110,52 @@ function ListAllAddress() {
         while ($person = $people->FetchRow()) {
             $xml->startElement('Person');
             foreach ($person as $key => $value){
+                $xml->writeAttribute($key, GetValueString($key, $value, $results));
+            }
+            $xml->endElement(); // end person
+        }
+        $xml->endElement();
+        $xml->endElement();
+    }
+
+    $xml->endElement(); // end data
+    $xml->endElement(); // end response
+    $xml->endDocument();
+    header("Content-type: text/xml");
+    print $xml->outputMemory(true);
+}
+
+function ListPeople() {
+    global $DB;
+
+    // validate the id is correct
+
+    $query = "SELECT * FROM " . Person::TABLE_NAME;
+    $results = $DB->Execute($query);
+
+    $xml = new XMLWriter();
+    $xml->openMemory();
+    $xml->setIndent(true);
+    $xml->startDocument('1.0','UTF-8');
+    $xml->startElement('response');
+    $xml->startElement('data');
+
+    while ($person = $results->FetchRow()) {
+        $xml->startElement('Person');
+        foreach ($person as $key => $value){
+            $xml->writeAttribute($key, GetValueString($key, $value, $results));
+        }
+
+        $pquery = "Select ". Place::ID . ", " . Place::NAME .
+                  " FROM ". Place::TABLE_NAME .
+                  " LEFT JOIN links ON ".Place::TABLE_NAME.".".Place::ID."=links.places ".
+                  "WHERE links.people=" . $person[Person::ID];
+        $places = $DB->Execute($pquery);
+
+        $xml->startElement('Places');
+        while ($location = $places->FetchRow()) {
+            $xml->startElement('Place');
+            foreach ($location as $key => $value){
                 $xml->writeAttribute($key, GetValueString($key, $value, $results));
             }
             $xml->endElement(); // end person
