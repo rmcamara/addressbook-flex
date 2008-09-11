@@ -2,7 +2,7 @@
 <thecamaras:CommonEditor
     xmlns:mx="http://www.adobe.com/2006/mxml"
     xmlns:thecamaras="net.thecamaras.*"
-    icon="{PERSON_ICON}" >
+    icon="{PERSON_ICON}" preinitialize="establishName()">
     
     <mx:Style >        
         .personTitle {
@@ -37,6 +37,10 @@
                 
                 editor = pEditor;
             }
+            
+            private function establishName():void {
+                titleText = "New Person";
+            }
 
             override public function setId (id:int):void{
                 super.setId(id);
@@ -54,13 +58,14 @@
             override protected function loadModel(xml:XML):void{
                 this.person = new Person(xml.data.Person[0]);
                 this.label = person.firstname;
-                this.nameHeader.text = person.firstname + ' ' + person.lastname;
+                titleText = person.firstname + ' ' + person.lastname;
                 PersonEditor(this.editor).person = this.person;
                 busyContainer.enabled = true;
                 
                 // Display the current personel details
                 displayBox.removeAllChildren();
                 PersonRenderer(displayBox.addChild(new PersonRenderer())).source = xml.data.Person[0];
+                displayBox.getChildAt(0).height = 80;
                 
                 // establish viewer the possible locations
                 var pViewer:PlaceRenderer;                

@@ -11,6 +11,8 @@
 
     <mx:Script >
         <![CDATA[
+            import net.thecamaras.models.BaseModel;
+            import mx.events.PropertyChangeEvent;
             import mx.events.ValidationResultEvent;
             import net.thecamaras.models.Person;
             public static const EDIT_WIDTH:int = 280;
@@ -21,8 +23,14 @@
             private var _dirty:Boolean = false;
             
             [Bindable]
-            public function get dirty():Boolean { return _dirty; }
-            public function set dirty(arg:Boolean):void{ _dirty = arg; }
+            public function get dirty():Boolean { return _dirty || _person.id == BaseModel.NEW_ID; }
+            public function set dirty(arg:Boolean):void
+            { 
+                var prop:PropertyChangeEvent = 
+                    PropertyChangeEvent.createUpdateEvent(this, "dirty", _dirty, arg);
+                _dirty = arg;
+                dispatchEvent(prop);
+            }
             
             private function init():void{
                 title.addEventListener(Event.CHANGE, makeDirty);

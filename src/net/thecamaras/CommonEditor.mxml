@@ -47,6 +47,8 @@
             
             [Bindable]
             protected var editor:IEditor;
+            
+            [Bindable] protected var titleText:String = "New Thing";
 
             public function setId (id:int):void{
                 if (!initialized){
@@ -132,7 +134,7 @@
     
     <mx:Label id="nameHeader" 
             styleName="Title" 
-            text="New Person" width="100%">
+            text="{titleText}" width="100%">
             
     </mx:Label>
     <mx:HDividedBox id="busyContainer" 

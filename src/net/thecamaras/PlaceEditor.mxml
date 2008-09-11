@@ -2,7 +2,8 @@
 <thecamaras:CommonEditor
     xmlns:mx="http://www.adobe.com/2006/mxml"
     xmlns:thecamaras="net.thecamaras.*"
-    icon="{PLACE_ICON}" >
+    icon="{PLACE_ICON}" 
+    preinitialize="establishName();">
 
     <mx:Script >
         <![CDATA[
@@ -31,6 +32,10 @@
                 
                 editor = pEditor;
             }
+            
+            private function establishName():void {
+                titleText = "New Location";
+            }
 
             override public function setId (id:int):void{
                 super.setId(id);
@@ -48,7 +53,7 @@
             override protected function loadModel(xml:XML):void{
                 this.location = new Place(xml.data.Place[0]);
                 this.label = location.name;
-                this.nameHeader.text = location.name;
+                titleText = location.name;
                 LocationEditor(this.editor).location = this.location;
                 busyContainer.enabled = true;
                 
