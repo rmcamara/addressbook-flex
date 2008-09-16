@@ -100,6 +100,15 @@
                 this.dispatchEvent(new CreateEditorEvent(TYPE_PERSON));
             }
             
+            override protected function displayName(item:Object, column:AdvancedDataGridColumn):String{
+                var xml:XML = XML(item);
+                
+                if (xml.name() == TYPE_PERSON){
+                    return xml.@firstname;
+                }
+                return super.displayName(item, column);
+            }
+            
             
             protected function cellDisplay(item:Object, column:AdvancedDataGridColumn):String{
                 var xml:XML = XML(item);

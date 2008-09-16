@@ -40,4 +40,17 @@
 	        <transaction src="db/data.sql"/>
 	      </sql>
 	    </target>
+	
+	   <target name="db.Fulldata">
+	          <sql driver="com.mysql.jdbc.Driver"
+	               url="jdbc:mysql://localhost:3306"
+	               userid="${mysql.username}" 
+	            password="${mysql.password}" >
+	            <classpath>
+	              <pathelement path="db/mysql-connector-java-5.1.6-bin.jar"/>      
+	            </classpath>
+	            <transaction>use ${database.name}</transaction>
+	            <transaction src="db/fulldata.sql"/>
+	          </sql>
+	        </target>
 </project>

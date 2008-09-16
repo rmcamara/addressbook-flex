@@ -18,7 +18,7 @@
             
             private function init():void {
                 login.addEventListener(LoginDialog.EVENT_AUTHENTICATED, handleAuthenticate);
-                
+                                
                 User.instance = new User("rcamara", "pass");
                 User.instance.authenticated = true;
                 login.dispatchEvent(new DynamicEvent(LoginDialog.EVENT_AUTHENTICATED));
@@ -26,6 +26,10 @@
             
             private function handleAuthenticate(e:Event):void {
                 appStack.selectedIndex=1;
+            }
+            
+            private function errorHandler(event:ErrorEvent):void{
+                Alert.show(event.toString(), "Error Handler Reached"); 
             }
         ]]>
     </mx:Script>
