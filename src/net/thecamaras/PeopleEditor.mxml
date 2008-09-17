@@ -2,7 +2,7 @@
 <thecamaras:CommonEditor
     xmlns:mx="http://www.adobe.com/2006/mxml"
     xmlns:thecamaras="net.thecamaras.*"
-    icon="{PERSON_ICON}" preinitialize="establishName()">
+    icon="{PERSON_ICON}" preinitialize="establishLabels()">
     
     <mx:Style >        
         .personTitle {
@@ -38,8 +38,9 @@
                 editor = pEditor;
             }
             
-            private function establishName():void {
+            private function establishLabels():void {
                 titleText = "New Person";
+                childText = "Possible Addresses";
             }
 
             override public function setId (id:int):void{
@@ -65,7 +66,6 @@
                 // Display the current personel details
                 displayBox.removeAllChildren();
                 PersonRenderer(displayBox.addChild(new PersonRenderer())).source = xml.data.Person[0];
-                displayBox.getChildAt(0).height = 80;
                 
                 // establish viewer the possible locations
                 var pViewer:PlaceRenderer;                
@@ -84,6 +84,7 @@
              */  
             override protected function buildSaveRequest():Object{
                 var pEditor:PersonEditor = PersonEditor(editor);
+                var removeDigitPattern:RegExp = /\D*/g;
                 
                 var args:Object = new Object();
                 args.method = "SavePerson";
@@ -92,7 +93,7 @@
                 args.firstname = pEditor.firstName.text;
                 args.lastname = pEditor.lastName.text;
                 args.email = pEditor.email.text;
-                args.cell = pEditor.cellphone.text;
+                args.cell = pEditor.cellphone.text.replace(removeDigitPattern, "");
                 // Reformat the date to one that php/mysql can understand
                 args.birth = BaseModel.DATE_FORMATER.format(pEditor.birth.text);
                 args.details = pEditor.details.text;

@@ -11,12 +11,15 @@ package net.thecamaras.models
         private var _title:String;
         private var _birthdate:Date;
         private var _email:String;
-        private var _cell:int;
+        private var _cell:Number;
         private var _details:String;
         private var _places:XMLList;
         
+        public static var PHONE_DISPLAY_FORMATER:PhoneFormatter = new PhoneFormatter();
+        PHONE_DISPLAY_FORMATER.formatString = "(###) ###-####";
+        
         public static var PHONE_FORMATER:PhoneFormatter = new PhoneFormatter();
-        PHONE_FORMATER.formatString = "(###) ###-####";
+        PHONE_FORMATER.formatString = "##########";
         
         public function Person(root:XML){
             super(root);
@@ -34,7 +37,7 @@ package net.thecamaras.models
             }
             
             this._email = String(root.@email);
-            this._cell = int(root.@cell);
+            this._cell = parseFloat(root.@cell);
             this._details = String(root.@details);
             this._places = root.Places;
         }
@@ -71,7 +74,7 @@ package net.thecamaras.models
         
         [Bindable]
         public function get cell():String{
-            return PHONE_FORMATER.format(_cell);    
+            return PHONE_DISPLAY_FORMATER.format(_cell);    
         }
         
         [Bindable]
@@ -106,7 +109,7 @@ package net.thecamaras.models
         }
         
         public function set cell(arg:String):void{
-            this._cell = parseInt(arg);
+            this._cell = parseFloat(PHONE_FORMATER.format(arg));
             this.dirty = true;
         }
 

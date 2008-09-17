@@ -3,7 +3,7 @@
     xmlns:mx="http://www.adobe.com/2006/mxml"
     xmlns:thecamaras="net.thecamaras.*"
     icon="{PLACE_ICON}" 
-    preinitialize="establishName();">
+    preinitialize="establishLabels();">
 
     <mx:Script >
         <![CDATA[
@@ -33,8 +33,9 @@
                 editor = pEditor;
             }
             
-            private function establishName():void {
+            private function establishLabels():void {
                 titleText = "New Location";
+                childText = "People At Location";
             }
 
             override public function setId (id:int):void{
@@ -60,7 +61,6 @@
                 // Display the current personel details
                 displayBox.removeAllChildren();
                 PlaceRenderer(displayBox.addChild(new PlaceRenderer())).source = xml.data.Place[0];
-                displayBox.getChildAt(0).height = 80;
                 
                 // establish viewer the possible locations
                 var pViewer:PersonRenderer;                
@@ -70,7 +70,6 @@
                     
                     this.childListing.addChild(pViewer);
                     pViewer.source = place;
-                    pViewer.invalidateSize();
                 }
             }
             

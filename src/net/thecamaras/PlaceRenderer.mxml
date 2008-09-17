@@ -5,6 +5,7 @@
     
     <mx:Script>
         <![CDATA[
+            import mx.core.UIComponent;
             import flash.net.navigateToURL;
             import mx.formatters.DateFormatter;
             import net.thecamaras.models.BaseModel;
@@ -43,11 +44,12 @@
                 results += source.@city + ", " + source.@state + SPACE + source.@zipcode + NEWLINE;
                 
                 if (source.@phone != ""){
-                    results += Person.PHONE_FORMATER.format(source.@phone) + NEWLINE 
+                    results += Person.PHONE_DISPLAY_FORMATER.format(source.@phone) + NEWLINE 
                 }
 
                 trace(results);
                 this.htmlText = results;
+                this.height = 120;
             }
             
             private function init():void{

@@ -24,8 +24,7 @@
             
             [Bindable]
             public function get dirty():Boolean { return _dirty || _person.id == BaseModel.NEW_ID; }
-            public function set dirty(arg:Boolean):void
-            { 
+            public function set dirty(arg:Boolean):void{ 
                 var prop:PropertyChangeEvent = 
                     PropertyChangeEvent.createUpdateEvent(this, "dirty", _dirty, arg);
                 _dirty = arg;

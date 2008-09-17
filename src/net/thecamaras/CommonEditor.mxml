@@ -28,6 +28,10 @@
         .ChildRenderer{
             font-size:13;
             text-align:center;
+            padding-top:10;
+            padding-left:20;
+            padding-right:20;
+            padding-bottom:10;
         }
     </mx:Style>
 
@@ -48,7 +52,11 @@
             [Bindable]
             protected var editor:IEditor;
             
-            [Bindable] protected var titleText:String = "New Thing";
+            [Bindable] 
+            protected var titleText:String = "New Thing";
+            
+            [Bindable]
+            protected var childText:String = "Assocaited Stuff";
 
             public function setId (id:int):void{
                 if (!initialized){
@@ -137,19 +145,21 @@
             text="{titleText}" width="100%">
             
     </mx:Label>
-    <mx:HDividedBox id="busyContainer" 
+    <mx:HBox id="busyContainer" 
         height="90%" width="100%">
-        <mx:VDividedBox width="50%" height="100%">
+        <mx:VBox width="50%" height="100%">
             <mx:TitleWindow id="displayBox" 
                 title="Current Details" titleStyleName="DetailTitle" styleName="DetailRenderer" 
                 width="100%" height="40%">
             </mx:TitleWindow>
-            <mx:VBox id="childListing"
+            <mx:TitleWindow id="childListing"
+                title="{childText}" 
+                titleStyleName="DetailTitle"
                 styleName="ChildRenderer"
                 width="100%" height="60%">
-            </mx:VBox>
-        </mx:VDividedBox>
-    </mx:HDividedBox>
+            </mx:TitleWindow>
+        </mx:VBox>
+    </mx:HBox>
     <mx:HBox id="buttonBar"
         width="100%" horizontalAlign="right">
         <mx:Button id="saveBtn" label="save" click="save();" />
