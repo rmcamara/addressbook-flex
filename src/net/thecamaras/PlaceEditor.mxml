@@ -7,6 +7,7 @@
 
     <mx:Script >
         <![CDATA[
+            import mx.containers.TitleWindow;
             import net.thecamaras.models.Place;
             import net.thecamaras.models.BaseModel;
             import mx.messaging.messages.IMessage;
@@ -92,6 +93,13 @@
                 args.phone = pEditor.phoneTxt.text;
                 args.details = pEditor.detailsTxt.text;
                 return args;
+            }
+            
+            override protected function createLinkDialog():TitleWindow{
+                var dialog:LinkDialog;
+                dialog = new LinkDialog();
+                
+                return dialog;
             }
             
         ]]>

@@ -37,6 +37,7 @@
 
     <mx:Script >
         <![CDATA[
+            import mx.managers.PopUpManager;
             import mx.events.PropertyChangeEvent;
             import mx.binding.utils.BindingUtils;
             import mx.rpc.events.AbstractEvent;
@@ -137,6 +138,26 @@
                 var msg:IMessage = IMessage(event.message);
                 Alert.show(ObjectUtil.toString(msg.body), "Error saving");
             }
+            
+            
+            protected function link():void{
+                if (editor.isNew()){
+                    Alert.show("This is an unsaved item. Please save it before trying to link.", 
+                                "Link Items", Alert.OK, this);    
+                    return; 
+                }
+
+                var dialog:TitleWindow = createLinkDialog();
+                dialog.addEventListener(CloseEvent.CLOSE, function(event:CloseEvent):void{
+                    PopUpManager.removePopUp(dialog);
+                });
+                PopUpManager.addPopUp(dialog, this, true);
+                PopUpManager.centerPopUp(dialog);
+            }
+            
+            protected function createLinkDialog():TitleWindow{
+                throw new Error("The createLinkWindow was not implemented");
+            }
         ]]>
     </mx:Script>
     
@@ -162,6 +183,9 @@
     </mx:HBox>
     <mx:HBox id="buttonBar"
         width="100%" horizontalAlign="right">
+        <mx:Button id="linkBtn" 
+            label="link" toolTip="Link current thing with people or places" 
+            click="link();" />
         <mx:Button id="saveBtn" label="save" click="save();" />
         <mx:Button id="closeBtn" label="close" click="close();"/>
     </mx:HBox>

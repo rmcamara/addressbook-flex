@@ -18,7 +18,7 @@
             public static const EDIT_WIDTH:int = 280;
             
             [Bindable]
-            public var _person:Person = new Person(null);
+            private var _person:Person = new Person(null);
 
             private var _dirty:Boolean = false;
             
@@ -78,6 +78,10 @@
                 }
                 
                 return result;
+            }
+            
+            public function isNew():Boolean{
+                return _person.id == BaseModel.NEW_ID;
             }
         ]]>
     </mx:Script>

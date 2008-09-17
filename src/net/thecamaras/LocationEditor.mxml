@@ -99,6 +99,10 @@
                 
                 return result;
             }
+            
+            public function isNew():Boolean{
+                return _location.id == BaseModel.NEW_ID;
+            }
         ]]>
     </mx:Script>
     

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    layout="vertical" 
+    title="Link items"
+    showCloseButton="true" width="600" height="500" creationComplete="load()">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import mx.events.CollectionEvent;
+            import mx.events.DataGridEvent;
+            import mx.controls.CheckBox;
+            import mx.collections.XMLListCollection;
+            import mx.collections.HierarchicalData;
+            import mx.events.CloseEvent;
+            
+            [Bindable]
+            private var items:XMLListCollection; // XML list of places
+            
+            
+            private function load():void{
+                var args:Object = new Object();
+                args.method = "ListPeople";
+                Connection.instance.send("address.php", args, populate);    
+            }
+            
+            protected function populate(xml:XML):void {
+                var data:XMLListCollection = new XMLListCollection(xml.data.children())
+                items = data;
+            }
+            
+            private function handleClose():void{
+                this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+            }
+            
+            private function handleSave():void{
+                Alert.show(items.getItemAt(0).toString());
+            }
+            
+            private function updateSelected(event:DataGridEvent):void{
+                var myEditor:CheckBox = 
+                    CheckBox(event.currentTarget.itemEditorInstance);
+                
+                event.currentTarget.editedItemRenderer.data.@selected = myEditor.selected;
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Text id="description"
+        width="100%" selectable="false"
+        textAlign="justify"
+        text="This dialog is intended to allow you to associate an person/location with other locations or people. Check the items that you wish you be associated with the items." >
+        
+    </mx:Text>
+    <mx:HRule width="100%"/>
+    <mx:Spacer width="100%" height="10"/>
+    
+    <mx:DataGrid id="itemTable"
+        dataProvider="{items}" editable="true"
+        width="100%" height="70%"
+        alternatingItemColors="[#EEEEEE, white]"
+        itemEditEnd="updateSelected(event);"
+        >
+        <mx:columns>
+            <mx:DataGridColumn id="selection" 
+                headerText="" width="25"
+                editable="true"
+                dataField="@selected" editorDataField="selected"
+                itemRenderer="mx.controls.CheckBox" rendererIsEditor="true">
+            </mx:DataGridColumn>
+            <mx:DataGridColumn id="firstName"
+                editable="false"
+                headerText="First Name" 
+                dataField="@firstname">
+            </mx:DataGridColumn>
+            <mx:DataGridColumn id="lastName"
+                editable="false"
+                headerText="Last Name" 
+                dataField="@lastname">
+            </mx:DataGridColumn>
+        </mx:columns>
+    </mx:DataGrid>    
+    
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button id="saveBtn" label="save" click="handleSave();" />
+        <mx:Button id="closeBtn" label="close" click="handleClose();"/>
+    </mx:ControlBar>
+</mx:TitleWindow>
