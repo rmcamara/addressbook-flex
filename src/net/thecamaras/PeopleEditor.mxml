@@ -13,6 +13,7 @@
 
     <mx:Script >
         <![CDATA[
+            import mx.containers.TitleWindow;
             import net.thecamaras.models.BaseModel;
             import mx.messaging.messages.IMessage;
             import mx.rpc.events.FaultEvent;
@@ -98,6 +99,15 @@
                 args.birth = BaseModel.DATE_FORMATER.format(pEditor.birth.text);
                 args.details = pEditor.details.text;
                 return args;
+            }
+            
+            override protected function createLinkDialog():TitleWindow{
+                var dialog:LinkDialog;
+                dialog = new LinkDialog();
+                dialog.setMode(LinkDialog.TYPE_PLACE);
+                dialog.modelId = person.id;
+                
+                return dialog;
             }
             
         ]]>

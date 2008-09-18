@@ -16,30 +16,33 @@ switch (@$_REQUEST["method"]) {
     case "ListPlaces":
         ListAllAddress();
         break;
-    case "Person":
-        GetPerson();
-        break;
-    case "SavePerson":
-        CommitPerson();
-        break;
     case "Place":
         GetLocation();
         break;
     case "SavePlace":
         CommitLocation();
         break;
+    case "LinkLocation":
+        LinkLocation();
+        break;
+    case "UpdatePeopleLink":
+        UpdateLinks(false);
+        break;
     case "ListPeople":
         ListPeople();
+        break;
+    case "Person":
+        GetPerson();
+        break;
+    case "SavePerson":
+        CommitPerson();
         break;
     case "LinkPeople":
         LinkPeople();
         break;
-    case "LinkLocation":
-        LinkLocation();
+    case "UpdateLocationLink":
+        UpdateLinks(true);
         break;
-//    case "InsertAddressee":
-//        $ret = InsertAddress();
-//        break;
     default:
         throw new Exception("Unrecognized Request:" . $_REQUEST["method"]);
         break;
@@ -231,6 +234,82 @@ function LinkLocation() {
     }
 
     $xml->endElement(); // end data
+    $xml->endElement(); // end response
+    $xml->endDocument();
+    header("Content-type: text/xml");
+    print $xml->outputMemory(true);
+}
+
+function UpdateLinks($mode) {
+    global $DB;
+
+    $xml = new XMLWriter();
+    $xml->openMemory();
+    $xml->setIndent(true);
+    $xml->startDocument('1.0','UTF-8');
+    $xml->startElement('response');
+
+    // Remove links no longer used.
+    $xml->startElement('delete');
+    $query = "DELETE FROM links WHERE ";
+    if ($mode){
+        $query .= "places=";
+    }else{
+        $query .= "people=";
+    }
+    $query .= $mode ? $_REQUEST[Place::ID] : $_REQUEST[Person::ID];
+    $query .= " AND ";
+    if ($mode){
+        $query .= "people";
+    }else{
+        $query .= "places";
+    }
+    $query .= " NOT IN (";
+
+    $linkCount = $_REQUEST['count'];
+    for ($x = 0; $x < $linkCount; $x++){
+        if ($x > 0){
+            $query .= ", ";
+        }
+        $query .= $_REQUEST['lid'.$x];
+    }
+    $query .= ")";
+
+    $DB->Execute($query);
+    $xml->text($query);
+    $xml->endElement();
+
+    for ($x = 0; $x < $linkCount; $x++){
+        $query = "Select * FROM links WHERE ";
+        $query .= $mode ? "places=" : "people=";
+        $query .= $mode ? $_REQUEST[Place::ID] : $_REQUEST[Person::ID];
+        $query .= " AND ";
+        $query .= $mode ? "people=" : "places=";
+        $query .= $_REQUEST['lid'.$x];
+        $xml->startElement('select');
+        $results = $DB->Execute($query);
+        $xml->text($query);
+        if ($results->FetchRow() == null){
+            $query = "INSERT INTO links (";
+            $query .= $mode ? "places" : "people";
+            $query .= ", ";
+            $query .= $mode ? "people" : "places";
+            $query .= ") VALUES (";
+            $query .= $mode ? $_REQUEST[Place::ID] : $_REQUEST[Person::ID];
+            $query .= ", ";
+            $query .= $_REQUEST['lid'.$x];
+            $query .= ")";
+
+            $xml->startElement('insert');
+            $xml->text($query);
+            $xml->endElement();
+            $DB->Execute($query);
+        }
+        $xml->endElement();
+    }
+
+
+    $xml->text("complete");
     $xml->endElement(); // end response
     $xml->endDocument();
     header("Content-type: text/xml");

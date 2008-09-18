@@ -78,7 +78,7 @@
             private function handleSave():void{
                 var count:int = 0;
                 var args:Object = new Object();
-                args.method = _type == TYPE_PERSON ? "UpdatePeopleLink" : "UpdateLocationLink";
+                args.method = _type == TYPE_PERSON ? "UpdateLocationLink" : "UpdatePeopleLink";
                 args.id = _id;
                 
                 for each (var item:XML in items){
