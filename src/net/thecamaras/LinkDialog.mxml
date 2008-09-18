@@ -3,10 +3,18 @@
     xmlns:mx="http://www.adobe.com/2006/mxml" 
     layout="vertical" 
     title="Link items"
-    showCloseButton="true" width="600" height="500" creationComplete="load()">
+    showCloseButton="true" width="600" height="500" 
+    creationComplete="load()" initialize="init()">
     
     <mx:Script>
         <![CDATA[
+            import mx.rpc.events.FaultEvent;
+            import mx.collections.SortField;
+            import mx.collections.Sort;
+            import mx.utils.ObjectUtil;
+            import net.thecamaras.models.Person;
+            import net.thecamaras.models.Place;
+            import mx.collections.ICollectionView;
             import mx.controls.Alert;
             import mx.events.CollectionEvent;
             import mx.events.DataGridEvent;
@@ -15,19 +23,52 @@
             import mx.collections.HierarchicalData;
             import mx.events.CloseEvent;
             
+            public static const TYPE_PLACE:String = Place.PLACE_TYPE;
+            public static const TYPE_PERSON:String =  Person.PERSON_TYPE;
+            
             [Bindable]
             private var items:XMLListCollection; // XML list of places
             
+            private var _id:int;
+            private var _type:String = TYPE_PERSON;
+            
+            public function set modelId(arg:int):void {this._id = arg};
+            
+            public function setMode(arg:String):String{
+                if (arg == TYPE_PLACE){
+                    this._type = TYPE_PLACE;
+                }
+                else{
+                    this._type = TYPE_PERSON;
+                }
+                return this._type;
+            }
+            
+            private function init():void{
+                if (_type == TYPE_PERSON){
+                    city.visible = false;
+                    state.visible = false;
+                    locationName.visible = false;
+                }else{
+                    firstName.visible = false;
+                    lastName.visible = false;
+                }
+            }
             
             private function load():void{
                 var args:Object = new Object();
-                args.method = "ListPeople";
-                Connection.instance.send("address.php", args, populate);    
+                args.method = _type == TYPE_PERSON ? "LinkPeople" : "LinkLocation";
+                args.id = _id;
+                Connection.instance.send("address.php", args, populate); 
             }
             
             protected function populate(xml:XML):void {
-                var data:XMLListCollection = new XMLListCollection(xml.data.children())
-                items = data;
+                var data:XMLListCollection = new XMLListCollection(xml.data.children());
+                var sort:Sort = new Sort();
+                sort.fields = [new SortField("@selected", true, true)];
+                data.sort = sort;
+                data.refresh();
+                items = new XMLListCollection(data.copy());
             }
             
             private function handleClose():void{
@@ -35,14 +76,61 @@
             }
             
             private function handleSave():void{
-                Alert.show(items.getItemAt(0).toString());
+                var count:int = 0;
+                var args:Object = new Object();
+                args.method = _type == TYPE_PERSON ? "UpdatePeopleLink" : "UpdateLocationLink";
+                args.id = _id;
+                
+                for each (var item:XML in items){
+                    if (item.@selected == 'true'){
+                        args['lid'+count] = item.@id;
+                        count++;
+                    }
+                }
+                args.count = count;
+                Connection.instance.send2("address.php", args, handleUpdate, failUpdate);
+                this.enabled = false; 
             }
             
-            private function updateSelected(event:DataGridEvent):void{
-                var myEditor:CheckBox = 
-                    CheckBox(event.currentTarget.itemEditorInstance);
+            private function handleUpdate(results:XML):void{
+                this.enabled = true;
+                this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+            }
+            
+            private function failUpdate(event:FaultEvent):void{
+                Alert.show("Error performing update", "Update Links Failed" );
+                this.enabled = true;
+            }
+            
+            private function filterGrid():void {
+                var provider:ICollectionView = 
+                    ICollectionView(itemTable.dataProvider);
+                provider.filterFunction = filterText;
+                provider.refresh();
+            }
+            
+            private function filterText(item:Object):Boolean{
+                var xitem:XML = XML(item);
                 
-                event.currentTarget.editedItemRenderer.data.@selected = myEditor.selected;
+                if (filterInput.text == "" ){
+                    return true;
+                }
+                
+                var filterKey:String;
+                filterKey = filterInput.text.toLocaleLowerCase();
+                for each (var x:XML in xitem.attributes()){
+                    if (x.toString().toLocaleLowerCase().indexOf(filterKey) > -1){
+                        return true;
+                    }
+                }
+                
+                // Check the children
+                for each (var i:XML in xitem.children()){
+                    if (filterText(i)){
+                        return true;
+                    }
+                }
+                return false;
             }
         ]]>
     </mx:Script>
@@ -55,19 +143,32 @@
     </mx:Text>
     <mx:HRule width="100%"/>
     <mx:Spacer width="100%" height="10"/>
-    
+    <mx:HBox>
+        <mx:Label text="Filter:" />
+        <mx:TextInput id="filterInput" 
+            width="333" textAlign="left" 
+            change="filterGrid()">
+            
+        </mx:TextInput>
+    </mx:HBox>
     <mx:DataGrid id="itemTable"
         dataProvider="{items}" editable="true"
-        width="100%" height="70%"
-        alternatingItemColors="[#EEEEEE, white]"
-        itemEditEnd="updateSelected(event);"
-        >
+        width="100%" height="100%"
+        alternatingItemColors="[#EEEEEE, white]">
         <mx:columns>
             <mx:DataGridColumn id="selection" 
                 headerText="" width="25"
                 editable="true"
                 dataField="@selected" editorDataField="selected"
-                itemRenderer="mx.controls.CheckBox" rendererIsEditor="true">
+                rendererIsEditor="true" sortable="false">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:CheckBox 
+                            paddingLeft="5"
+                            selected="{data.@selected == 'true'}">
+                        </mx:CheckBox>
+                    </mx:Component>
+                </mx:itemRenderer>
             </mx:DataGridColumn>
             <mx:DataGridColumn id="firstName"
                 editable="false"
@@ -78,6 +179,22 @@
                 editable="false"
                 headerText="Last Name" 
                 dataField="@lastname">
+            </mx:DataGridColumn>
+            <mx:DataGridColumn id="locationName"
+                editable="false"
+                headerText="Name" 
+                dataField="@name">
+            </mx:DataGridColumn>
+            <mx:DataGridColumn id="city"
+                editable="false"
+                headerText="City" 
+                dataField="@city">
+            </mx:DataGridColumn>
+            <mx:DataGridColumn id="state"
+                editable="false"
+                headerText="State"
+                textAlign="center" 
+                dataField="@state">
             </mx:DataGridColumn>
         </mx:columns>
     </mx:DataGrid>    

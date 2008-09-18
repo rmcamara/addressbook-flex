@@ -7,6 +7,8 @@
 
     <mx:Script >
         <![CDATA[
+            import mx.controls.listClasses.ListData;
+            import mx.controls.List;
             import mx.containers.TitleWindow;
             import net.thecamaras.models.Place;
             import net.thecamaras.models.BaseModel;
@@ -98,6 +100,8 @@
             override protected function createLinkDialog():TitleWindow{
                 var dialog:LinkDialog;
                 dialog = new LinkDialog();
+                dialog.setMode(LinkDialog.TYPE_PERSON);
+                dialog.modelId = location.id;
                 
                 return dialog;
             }

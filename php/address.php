@@ -31,6 +31,12 @@ switch (@$_REQUEST["method"]) {
     case "ListPeople":
         ListPeople();
         break;
+    case "LinkPeople":
+        LinkPeople();
+        break;
+    case "LinkLocation":
+        LinkLocation();
+        break;
 //    case "InsertAddressee":
 //        $ret = InsertAddress();
 //        break;
@@ -40,32 +46,6 @@ switch (@$_REQUEST["method"]) {
 }
 
 die();
-
-function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = ""){
-    $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
-
-    $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
-
-    switch ($theType) {
-        case "text":
-            $theValue = ($theValue != "") ? '"' . $theValue . '"' : "NULL";
-            break;
-        case "long":
-        case "int":
-            $theValue = ($theValue != "") ? intval($theValue) : "NULL";
-            break;
-        case "double":
-            $theValue = ($theValue != "") ? '"' . doubleval($theValue) . '"' : "NULL";
-            break;
-        case "date":
-            $theValue = ($theValue != "") ? '"' . $theValue . '"' : "NULL";
-            break;
-        case "defined":
-            $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-            break;
-    }
-    return $theValue;
-}
 
 function GetValueString($key, $value, $results){
     if($value == null){
@@ -161,6 +141,92 @@ function ListPeople() {
             $xml->endElement(); // end person
         }
         $xml->endElement();
+        $xml->endElement();
+    }
+
+    $xml->endElement(); // end data
+    $xml->endElement(); // end response
+    $xml->endDocument();
+    header("Content-type: text/xml");
+    print $xml->outputMemory(true);
+}
+
+function LinkPeople() {
+    global $DB;
+
+    // validate the id is correct
+
+    $query = "SELECT " .Person::ID.", ".Person::FIRSTNAME.", " .Person::LASTNAME.
+             " FROM " . Person::TABLE_NAME;
+    $results = $DB->Execute($query);
+
+    $placeQuery = "SELECT * FROM links WHERE places=" . $_REQUEST[Person::ID];
+    $places = $DB->Execute($placeQuery);
+
+    $placeIds = Array();
+
+    while ($place = $places->FetchRow()) {
+        array_push($placeIds, $place['people']);
+    }
+
+    $xml = new XMLWriter();
+    $xml->openMemory();
+    $xml->setIndent(true);
+    $xml->startDocument('1.0','UTF-8');
+    $xml->startElement('response');
+    $xml->startElement('data');
+
+    while ($person = $results->FetchRow()) {
+        $xml->startElement('Person');
+        foreach ($person as $key => $value){
+            $xml->writeAttribute($key, GetValueString($key, $value, $results));
+        }
+        if (in_array($person[Place::ID], $placeIds)){
+            $xml->writeAttribute('selected', 'true');
+        }
+        $xml->endElement();
+    }
+
+    $xml->endElement(); // end data
+    $xml->endElement(); // end response
+    $xml->endDocument();
+    header("Content-type: text/xml");
+    print $xml->outputMemory(true);
+}
+
+function LinkLocation() {
+    global $DB;
+
+    // validate the id is correct
+
+    $query = "SELECT ".Place::ID.", ".Place::NAME.", " .Place::STATE.", " .Place::CITY.
+             " FROM " . Place::TABLE_NAME;
+    $results = $DB->Execute($query);
+
+    $placeQuery = "SELECT * FROM links WHERE people=" . $_REQUEST[Person::ID];
+    $people = $DB->Execute($placeQuery);
+
+    $peopleIds = Array();
+
+    while ($person = $people->FetchRow()) {
+        array_push($peopleIds, $person['places']);
+    }
+
+    $xml = new XMLWriter();
+    $xml->openMemory();
+    $xml->setIndent(true);
+    $xml->startDocument('1.0','UTF-8');
+    $xml->startElement('response');
+    $xml->startElement('data');
+
+    while ($person = $results->FetchRow()) {
+        $xml->startElement('Places');
+        foreach ($person as $key => $value){
+            $xml->writeAttribute($key, GetValueString($key, $value, $results));
+        }
+        if (in_array($person[Place::ID], $peopleIds)){
+            $xml->writeAttribute('selected', 'true');
+        }
         $xml->endElement();
     }
 
