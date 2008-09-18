@@ -33,6 +33,7 @@
             private var _type:String = TYPE_PERSON;
             
             public function set modelId(arg:int):void {this._id = arg};
+            public function get modelId():int {return this._id};
             
             public function setMode(arg:String):String{
                 if (arg == TYPE_PLACE){

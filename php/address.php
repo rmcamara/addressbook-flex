@@ -28,6 +28,9 @@ switch (@$_REQUEST["method"]) {
     case "UpdatePeopleLink":
         UpdateLinks(false);
         break;
+    case "DeletePerson":
+        DeleteModel(false);
+        break;
     case "ListPeople":
         ListPeople();
         break;
@@ -42,6 +45,9 @@ switch (@$_REQUEST["method"]) {
         break;
     case "UpdateLocationLink":
         UpdateLinks(true);
+        break;
+    case "DeleteLocation":
+        DeleteModel(true);
         break;
     default:
         throw new Exception("Unrecognized Request:" . $_REQUEST["method"]);
@@ -252,18 +258,10 @@ function UpdateLinks($mode) {
     // Remove links no longer used.
     $xml->startElement('delete');
     $query = "DELETE FROM links WHERE ";
-    if ($mode){
-        $query .= "places=";
-    }else{
-        $query .= "people=";
-    }
+    $query .= $mode ? "places=" : "people=";
     $query .= $mode ? $_REQUEST[Place::ID] : $_REQUEST[Person::ID];
     $query .= " AND ";
-    if ($mode){
-        $query .= "people";
-    }else{
-        $query .= "places";
-    }
+    $query .= $mode ? "people" : "places";
     $query .= " NOT IN (";
 
     $linkCount = $_REQUEST['count'];
@@ -468,22 +466,39 @@ function CommitLocation(){
     GetLocation();
 }
 
-/*
-function InsertEmployee() {
-global $conn;
+function DeleteModel($mode){
+    global $DB;
 
-$query_insert = sprintf("INSERT INTO employees (firstName, lastName, officePhone) VALUES (%s, %s, %s)",
-GetSQLValueString($_REQUEST["firstName"], "text"),
-GetSQLValueString($_REQUEST["lastName"], "text"),
-GetSQLValueString($_REQUEST["officePhone"], "text")
-);
+    $xml = new XMLWriter();
+    $xml->openMemory();
+    $xml->setIndent(true);
+    $xml->startDocument('1.0','UTF-8');
+    $xml->startElement('response');
 
-$ok = mysql_query($query_insert);
+    $query = "DELETE FROM links WHERE ";
+    $query .= $mode ? "places" : "people";
+    $query .= "=";
+    $query .= $mode ? $_REQUEST[Place::ID] : $_REQUEST[Person::ID];
+    $DB->Execute($query);
+    $xml->startElement('links');
+    $xml->text($query);
+    $xml->endElement();
 
-if (!$ok) {
-exit("Unable to insert to DB: " . mysql_error());
+    $query = "DELETE FROM ";
+    $query .= $mode ? Place::TABLE_NAME : Person::TABLE_NAME;
+    $query .= " WHERE ";
+    $query .= $mode ? Place::ID : Person::ID;
+    $query .= "=";
+    $query .= $mode ? $_REQUEST[Place::ID] : $_REQUEST[Person::ID];
+    $DB->Execute($query);
+    $xml->startElement('item');
+    $xml->text($query);
+    $xml->endElement();
+
+    $xml->endElement(); // end response
+    $xml->endDocument();
+    header("Content-type: text/xml");
+    print $xml->outputMemory(true);
 }
 
-}
-*/
 ?>

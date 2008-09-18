@@ -97,7 +97,14 @@
                 return args;
             }
             
-            override protected function createLinkDialog():TitleWindow{
+            override protected function buildDeleteRequest():Object{           
+                var args:Object = new Object();
+                args.method = "DeleteLocation";
+                args.id = location.id;
+                return args;
+            }
+            
+            override protected function createLinkDialog():LinkDialog{
                 var dialog:LinkDialog;
                 dialog = new LinkDialog();
                 dialog.setMode(LinkDialog.TYPE_PERSON);

@@ -39,7 +39,7 @@
                 col = new AdvancedDataGridColumn("First Name");
                 col.wordWrap = false;
                 col.labelFunction = displayName;
-                col.dataField = "@name";
+                col.dataField = "@firstname";
                 col.sortCompareFunction = sortByName;
                 col.sortable = true;
                 columns.push(col);

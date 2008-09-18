@@ -93,11 +93,11 @@
             
             protected function doClose(e:CloseEvent):void{
                 if (e.detail != Alert.OK){
-                        return;
-                    }
+                    return;
+                }
                     
-                    // Should probally fire an event requesting close
-                    this.parent.removeChild(this);
+                // Should probally fire an event requesting close
+                this.parent.removeChild(this);
             }
             
             /**
@@ -147,16 +147,47 @@
                     return; 
                 }
 
-                var dialog:TitleWindow = createLinkDialog();
+                var dialog:LinkDialog = createLinkDialog();
                 dialog.addEventListener(CloseEvent.CLOSE, function(event:CloseEvent):void{
                     PopUpManager.removePopUp(dialog);
+                    setId(dialog.modelId);
                 });
                 PopUpManager.addPopUp(dialog, this, true);
                 PopUpManager.centerPopUp(dialog);
             }
             
-            protected function createLinkDialog():TitleWindow{
+            protected function createLinkDialog():LinkDialog{
                 throw new Error("The createLinkWindow was not implemented");
+            }
+            
+            private function deleteModel():void{
+                Alert.show("Are you sure you want to delete this item. It cannot be recovered.?", "Delete", 
+                Alert.YES | Alert.NO, this, doDelete, null, Alert.NO);
+            }
+            
+            protected function doDelete(e:CloseEvent):void{
+                if (e.detail != Alert.YES){
+                    return;
+                }
+                
+                var args:Object = new Object();
+                args = buildDeleteRequest();
+                Connection.instance.send2("address.php", args, closeSuccessHandler,  closeErrorHandler);
+                this.busyContainer.enabled = false;
+            }
+            
+            private function closeErrorHandler(event:FaultEvent):void{
+                this.busyContainer.enabled = true;
+                Alert.show("Problem performing the delete\n " + ObjectUtil.toString(event.message), 
+                           "Delete Error");
+            }
+            
+            private function closeSuccessHandler(result:XML):void{
+                 this.parent.removeChild(this);
+            }
+            
+            protected function buildDeleteRequest():Object{
+                throw new Error("This method should have een overwritten");
             }
         ]]>
     </mx:Script>
@@ -181,12 +212,15 @@
             </mx:TitleWindow>
         </mx:VBox>
     </mx:HBox>
-    <mx:HBox id="buttonBar"
+    <mx:ControlBar id="buttonBar"
         width="100%" horizontalAlign="right">
+        <mx:Button id="deleteBtn" 
+            label="Delete" 
+            click="deleteModel();" />
         <mx:Button id="linkBtn" 
             label="link" toolTip="Link current thing with people or places" 
             click="link();" />
         <mx:Button id="saveBtn" label="save" click="save();" />
         <mx:Button id="closeBtn" label="close" click="close();"/>
-    </mx:HBox>
+    </mx:ControlBar>
 </mx:VBox>
