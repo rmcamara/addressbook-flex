@@ -43,14 +43,6 @@
                 col.sortable = true;
                 columns.push(col);
                 
-                col = new AdvancedDataGridColumn("Address");
-                col.dataField = "@address";
-                columns.push(col);
-                
-                col = new AdvancedDataGridColumn("Address2");
-                col.dataField = "@address2";
-                columns.push(col);
-                
                 col = new AdvancedDataGridColumn("City");
                 col.dataField = "@city";
                 col.setStyle("textAlign", "center");
@@ -65,17 +57,21 @@
                 col.dataField = "@zipcode";
                 col.setStyle("textAlign", "center");
                 columns.push(col);
+                
+                col = new AdvancedDataGridColumn("Details");
+                col.dataField = "@details";
+                col.dataTipField = "@details";
+                columns.push(col);
                  
                 var width:Number;
                 width = listingTable.width;
                 columns[0].width = 45;
                 width -= columns[0].width;
                 columns[1].width = width * .25;
-                columns[2].width = width * .25;
-                columns[3].width = width * .17;
-                columns[4].width = width * .15;
-                columns[5].width = width * .08;
-                columns[6].width = width * .10;
+                columns[2].width = width * .15;
+                columns[3].width = width * .08;
+                columns[4].width = width * .10;
+                columns[5].width = width * .42;
                 
                 listingTable.columns = columns;
                 listingTable.treeColumn = columns[0];
