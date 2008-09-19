@@ -58,11 +58,13 @@
              * @param xml The xml results of the service request. 
              */  
             override protected function loadModel(xml:XML):void{
+                super.loadModel(xml);
+                
                 this.person = new Person(xml.data.Person[0]);
                 this.label = person.firstname;
                 titleText = person.firstname + ' ' + person.lastname;
                 PersonEditor(this.editor).person = this.person;
-                busyContainer.enabled = true;
+                
                 
                 // Display the current personel details
                 displayBox.removeAllChildren();

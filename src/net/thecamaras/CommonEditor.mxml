@@ -74,7 +74,8 @@
             }
             
             protected function loadModel (xml:XML):void{
-               // does nothing by default
+                this.busyContainer.enabled = true;
+                altBtnBar.enabled = true;
             }
             
             
@@ -116,6 +117,7 @@
                 args = buildSaveRequest();
                 Connection.instance.send2("address.php", args, saveComplete, saveFailed);
                 this.busyContainer.enabled = false;
+                altBtnBar.enabled = false;
             }
             
             protected function buildSaveRequest():Object{
@@ -208,18 +210,21 @@
                 title="{childText}" 
                 titleStyleName="DetailTitle"
                 styleName="ChildRenderer"
-                width="100%" height="60%">
+                width="100%" height="280">
             </mx:TitleWindow>
         </mx:VBox>
     </mx:HBox>
     <mx:ControlBar id="buttonBar"
         width="100%" horizontalAlign="right">
-        <mx:Button id="deleteBtn" 
-            label="Delete" 
-            click="deleteModel();" />
-        <mx:Button id="linkBtn" 
-            label="link" toolTip="Link current thing with people or places" 
-            click="link();" />
+        <mx:HBox id="altBtnBar"
+            width="100%" horizontalAlign="left"
+            enabled="false">
+            <mx:Button id="linkBtn" 
+                label="Link" toolTip="Link current thing with people or places" 
+                click="link();" />
+            <mx:Button id="deleteBtn" 
+                label="Delete" click="deleteModel();" />
+        </mx:HBox>
         <mx:Button id="saveBtn" label="save" click="save();" />
         <mx:Button id="closeBtn" label="close" click="close();"/>
     </mx:ControlBar>
