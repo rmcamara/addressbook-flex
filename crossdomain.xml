@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cross-domain-policySYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
+<cross-domain-policy>
+<allow-access-from domain="www.thecamaras.net" />
+<allow-access-from domain="thecamaras.net" />
+<allow-access-from domain="addressbook.thecamaras.net" />
+</cross-domain-policy>
