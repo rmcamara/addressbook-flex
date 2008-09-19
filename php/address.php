@@ -65,7 +65,7 @@ function GetValueString($key, $value, $results){
         return $results->UserTimeStamp($value, "Y/m/d H:i:s");
     }
     else{
-        return $value;
+        return stripslashes($value);
     }
 }
 
@@ -74,7 +74,7 @@ function ListAllAddress() {
 
     // validate the id is correct
 
-    $query = "SELECT * FROM places";
+    $query = "SELECT * FROM places Order by " . Place::NAME;
     $results = $DB->Execute($query);
 
     $xml = new XMLWriter();
@@ -119,7 +119,7 @@ function ListPeople() {
 
     // validate the id is correct
 
-    $query = "SELECT * FROM " . Person::TABLE_NAME;
+    $query = "SELECT * FROM " . Person::TABLE_NAME . " Order By " . Person::LASTNAME.", ". Person::FIRSTNAME;
     $results = $DB->Execute($query);
 
     $xml = new XMLWriter();
