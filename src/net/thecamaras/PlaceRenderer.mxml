@@ -36,20 +36,26 @@
                 }
                 
                 var results:String = "";
+                var linecount:int = 1;
                 
                 results += source.@address + NEWLINE;
                 if (source.@address2 != ""){
-                    results += source.@address2 + NEWLINE;   
+                    results += source.@address2 + NEWLINE;
+                    linecount++;   
                 }
                 results += source.@city + ", " + source.@state + SPACE + source.@zipcode + NEWLINE;
-                
+                linecount++;
                 if (source.@phone != ""){
-                    results += Person.PHONE_DISPLAY_FORMATER.format(source.@phone) + NEWLINE 
+                    results += Person.PHONE_DISPLAY_FORMATER.format(source.@phone)
+                    linecount++; 
                 }
 
                 trace(results);
                 this.htmlText = results;
-                this.height = 120;
+                
+                var tdim:TextLineMetrics = determineTextFormatFromStyles().measureText(results);
+                var lineHeight:Number = tdim.height;                
+                this.height = linecount * lineHeight + tdim.leading*linecount + 20;
             }
             
             private function init():void{

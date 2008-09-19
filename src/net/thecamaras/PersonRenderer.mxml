@@ -38,25 +38,32 @@
                 }
                 
                 var results:String = "";
+                var linecount:int = 1;
                 
                 if (source.@title != ""){
-                    results += source.@title + SPACE;   
+                    results += source.@title + SPACE;
                 }
                 results += source.@firstname + SPACE + source.@lastname + NEWLINE;
                 if (source.@email != ""){
                     results += "<u><a href='event:mailto:"+source.@email+"'>"+source.@email+"</a></u>" + NEWLINE;
+                    linecount++;
                 }
                 
                 if (source.@cell != ""){
                     results += "Cell: " + Person.PHONE_DISPLAY_FORMATER.format(source.@cell) + NEWLINE;
+                    linecount++;
                 }
                 
                 if (source.@birth != ""){   
                     results += DATE_DISPLAY.format(new Date(Date.parse(source.@birth))) + NEWLINE;
+                    linecount++;
                 }
-                trace(results);
+
                 this.htmlText = results;
-                this.height = this.getExplicitOrMeasuredHeight();
+                
+                var tdim:TextLineMetrics = determineTextFormatFromStyles().measureText(results);
+                var lineHeight:Number = tdim.height;                
+                this.height = linecount * lineHeight + tdim.leading*linecount;
             }
             
             private function init():void{
