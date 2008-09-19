@@ -39,6 +39,9 @@
             [Embed(source="assets/refresh.jpg")]
             protected static const REFRESH_ICON:Class;
             
+            [Embed(source="assets/expandall.png")]
+            protected static const EXPAND_ICON:Class;
+            
             [Bindable]
             protected var addLabel:String = "New thing";
 
@@ -181,6 +184,9 @@
         <mx:Button id="refresh" 
             toolTip="Refresh" icon="{REFRESH_ICON}" 
             click="refreshModels()"/>
+        <mx:Button id="expand" 
+            toolTip="Expand All" icon="{EXPAND_ICON}" 
+            click="listingTable.expandAll();"/>
         <mx:HBox 
             width="100%" height="32" 
             verticalAlign="middle" horizontalAlign="right"  
