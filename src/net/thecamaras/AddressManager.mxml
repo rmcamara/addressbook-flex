@@ -56,6 +56,5 @@
     </camara:PlacesList>
     <camara:PeopleList id="people"
         label="People" >
-    </camara:PeopleList>   
-
+    </camara:PeopleList>
 </mx:TabNavigator>
