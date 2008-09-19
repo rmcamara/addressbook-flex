@@ -11,7 +11,7 @@ package net.thecamaras.models
         private var _address2:String;
         private var _city:String;
         private var _state:String;
-        private var _zipcode:int;
+        private var _zipcode:String;
         private var _phone:uint;
         private var _details:String;
         
@@ -29,7 +29,7 @@ package net.thecamaras.models
             this._address2 = String(root.@address2);
             this._city = String(root.@city);
             this._state = String(root.@state);
-            this._zipcode = parseInt(root.@zipcode);
+            this._zipcode = String(root.@zipcode);
             this._phone = parseInt(root.@phone);
             this._details = String(root.@details);
         }
@@ -106,7 +106,7 @@ package net.thecamaras.models
         }
         
         public function set zipcode(arg:String):void{
-            this._zipcode = parseInt(arg);
+            this._zipcode = arg;
             this.dirty = true;
         }
         

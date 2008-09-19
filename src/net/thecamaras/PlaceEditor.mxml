@@ -55,11 +55,12 @@
              * @param xml The xml results of the service request. 
              */  
             override protected function loadModel(xml:XML):void{
+                super.loadModel(xml);
+                
                 this.location = new Place(xml.data.Place[0]);
                 this.label = location.name;
                 titleText = location.name;
                 LocationEditor(this.editor).location = this.location;
-                busyContainer.enabled = true;
                 
                 // Display the current personel details
                 displayBox.removeAllChildren();
