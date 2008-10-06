@@ -29,11 +29,18 @@
             
             private function authenticate(): void {
                 User.instance = new User(username.text, password.text);
-                Connection.instance.send("login.php", User.instance, updateText);
+                
+                if (User.instance.user != "test"){
+                    Connection.instance.send("login.php", User.instance, updateText);    
+                }
+                else
+                {
+                    loginMsg.text = User.instance.password;   
+                }
             }
             
             private function updateText(result:XML): void {
-                if (result.text() != true)
+                if (result.data.text() != true)
                 {
                     loginMsg.text = "Authentication failed. Please try again.";
                     return;
@@ -46,7 +53,7 @@
     </mx:Script>
     
     <mx:Text text="Welcome" fontSize="40" paddingTop="20" />
-    <mx:Form verticalGap="10" indicatorGap="10" textAlign="left" paddingTop="60">
+    <mx:Form verticalGap="10" indicatorGap="10" textAlign="left" paddingTop="60" defaultButton="{login}">
         <mx:FormHeading label="Please Login" /> 
         <mx:FormItem label="Username" >
             <mx:TextInput id="username" />
@@ -55,10 +62,10 @@
             <mx:TextInput id="password" displayAsPassword="true" />
         </mx:FormItem>
         <mx:FormItem>
-            <mx:Button id="login" label="Login" enabled="false" click="authenticate()"/>
+            <mx:Button id="login" label="Login" enabled="false" click="authenticate()" width="100%"/>
         </mx:FormItem>
     </mx:Form>
-    <mx:Label id="loginMsg" width="600" color="red"/>    
+    <mx:Text id="loginMsg" width="600" color="red"/>    
     <mx:StringValidator source="{username}" minLength="1" property="text"/>
     <mx:StringValidator source="{password}" minLength="1" property="text"/>
 </mx:VBox>

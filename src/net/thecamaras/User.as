@@ -1,8 +1,13 @@
 package net.thecamaras
 {
+    import com.hurlant.crypto.Crypto;
+    import com.hurlant.crypto.hash.IHash;
+    import com.hurlant.util.Hex;
+    
     public class User
     {
     	public static var instance:User;
+    	private static var HASHER:IHash = Crypto.getHash('md5');
     	
         private var _user:String;
         private var _pass:String;
@@ -13,7 +18,7 @@ package net.thecamaras
         public function User(user:String, password:String)
         {
             this._user = user;
-            this._pass = password;
+            this._pass = Hex.fromArray(HASHER.hash(Hex.toArray(Hex.fromString(password))));
         }
         
         public function get user():String{

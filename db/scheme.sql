@@ -89,6 +89,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `username` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `last-login` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `last-ip` varchar(15) default '0.0.0.0',
+  `last_ip` varchar(15) default '0.0.0.0',
   PRIMARY KEY  (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
