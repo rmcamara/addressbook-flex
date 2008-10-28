@@ -1,168 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox
+<AbstractListingClass
+    xmlns="net.thecamaras.*"
     xmlns:mx="http://www.adobe.com/2006/mxml"
     horizontalAlign="left" 
-    creationComplete="init()" 
     height="100%" width="100%" 
     paddingLeft="10" paddingRight="10" >
-    
     <mx:Script>
         <![CDATA[
-            import net.thecamaras.events.CreateEditorEvent;
-            import net.thecamaras.models.Place;
-            import net.thecamaras.models.Person;
-            import mx.validators.EmailValidator;
-            import net.thecamaras.events.OpenEditorEvent;
-            import mx.collections.IHierarchicalCollectionView;
-            import mx.utils.ObjectUtil;
-            import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
-            import mx.controls.AdvancedDataGrid;
-            import mx.collections.HierarchicalData;
-            import mx.events.DynamicEvent;
+            import net.thecamaras.events.EditorModeEvent;
             import mx.core.ScrollPolicy;
-        
-            import mx.rpc.events.ResultEvent;
-            import mx.controls.Alert;
-            
-            protected static const TYPE_PLACE:String = Place.PLACE_TYPE;
-            protected static const TYPE_PERSON:String =  Person.PERSON_TYPE;
-            
-            [Bindable]
-            protected var modelList:HierarchicalData; // XML list of places
-            
-            [Embed(source="assets/person.png")]
-            protected static const PERSON_ICON:Class;
-            
-            [Embed(source="assets/place.png")]
-            protected static const PLACE_ICON:Class;
-            
-            [Embed(source="assets/refresh.jpg")]
-            protected static const REFRESH_ICON:Class;
-            
-            [Embed(source="assets/expandall.png")]
-            protected static const EXPAND_ICON:Class;
-            
-            [Bindable]
-            protected var addLabel:String = "New thing";
-
-            private function init():void {
-                refreshModels();
-                
-                listingTable.doubleClickEnabled=true;
-                listingTable.addEventListener(MouseEvent.DOUBLE_CLICK, openEditor);
-                listingTable.addEventListener(KeyboardEvent.KEY_DOWN, 
-                    function(e:KeyboardEvent):void{if (e.keyCode == 13) openEditor(e);});
-                listingTable.setFocus();
-                
-                addBtn.addEventListener(MouseEvent.CLICK, newItemRequest); 
-            }
-            
-            public function refreshModels():void {
-                this.enabled=false;
-            }
-            
-            protected function populate(xml:XML):void {
-                this.enabled=true;
-                var data:HierarchicalData = new HierarchicalData(xml.data.children())
-                modelList = data;
-            }
-            
-            protected function searchGrid():void {
-                var provider:IHierarchicalCollectionView = 
-                    IHierarchicalCollectionView(listingTable.dataProvider);
-                provider.filterFunction = filterText;
-                provider.refresh();
-            }
-            
-            protected function filterText(item:Object):Boolean{
-                var xitem:XML = XML(item);
-                
-                if (nameTxt.text == "" ){
-                    return true;
-                }
-                
-                var filterKey:String;
-                filterKey = nameTxt.text.toLocaleLowerCase();
-                for each (var x:XML in xitem.attributes()){
-                    if (x.toString().toLocaleLowerCase().indexOf(filterKey) > -1){
-                        return true;
-                    }
-                }
-                
-                // Check the children
-                for each (var i:XML in xitem.children()){
-                    if (filterText(i)){
-                        return true;
-                    }
-                }
-                return false;
-            }
-            
-            /** 
-             * Label handler for the name column. 
-             **/
-            protected function displayName(item:Object, column:AdvancedDataGridColumn):String{
-                var xml:XML = XML(item);
-                
-                if (xml.name() == TYPE_PLACE){
-                    return xml.@name;
-                }
-                else{
-                    return xml.@firstname + " " + xml.@lastname;
-                }
-            }
-            
-            /**
-             * Sort two xml objects. Compare is performed on the name and first name. 
-             * 
-             * @param obj1 base object.
-             * @param obj2 object to compare to.
-             **/ 
-            protected function sortByName(obj1:Object, obj2:Object): int {
-                var xml:XML = XML(obj1);
-                var xml2:XML = XML(obj2);
-               
-                if (xml.name() == TYPE_PLACE){
-                    if (xml2.name() == TYPE_PLACE){
-                        // string compare the location name
-                        return ObjectUtil.stringCompare(xml.@name, xml2.@name, true);                   
-                    }          
-                    return 1; // item2 is a person
-                }
-                else {
-                    if (xml2.name() == TYPE_PLACE){
-                        return -1;// item2 is a location                        
-                    }
-                    // String compare the first name of the two people
-                    return ObjectUtil.stringCompare(xml.@firstname, xml2.@firstname, true);
-                }
-            }
-            
-            protected function groupIconChooser(item:Object, depth:int):Class{
-                return iconChooser(item);
-            }
-            
-            protected function iconChooser(item:Object):Class{
-                var model:XML = XML(item);
-                if (model.name() == TYPE_PERSON){
-                    return PERSON_ICON;
-                }
-                else{
-                    return PLACE_ICON;
-                }
-            }
-            
-            protected function openEditor(event:Event):void{
-                var selected:XML = XML(listingTable.selectedItem);
-                if (selected == null){
-                    Alert.show("Nothing selected. Please select something to open");
-                }
-                this.dispatchEvent(new OpenEditorEvent(selected));
-            }
-            
-            protected function newItemRequest(event:Event):void{
-                
-            }
         ]]>
     </mx:Script>
     
@@ -184,13 +30,12 @@
         <mx:Button id="refresh" 
             toolTip="Refresh" icon="{REFRESH_ICON}" 
             click="refreshModels()"/>
-        <mx:Button id="expand" 
-            toolTip="Expand All" icon="{EXPAND_ICON}" 
-            click="listingTable.expandAll();"/>
+        <mx:Button id="switchMode" label="Switch Mode" 
+            click="switchMode_clickHandler()" />
         <mx:HBox 
             width="100%" height="32" 
             verticalAlign="middle" horizontalAlign="right"  
-            horizontalGap="0" paddingRight="20">
+            horizontalGap="0" paddingRight="0">
             <mx:Button id="addBtn" 
                 label="{addLabel}"  />
         </mx:HBox> 
@@ -204,4 +49,4 @@
         groupIconFunction="groupIconChooser" iconFunction="iconChooser"
         selectionMode="singleRow" editable="false" sortExpertMode="true" >
     </mx:AdvancedDataGrid>     
-</mx:VBox>
+</AbstractListingClass>
