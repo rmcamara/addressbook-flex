@@ -4,8 +4,7 @@ import mx.containers.TabNavigator;
 import mx.core.Container;
 import mx.events.FlexEvent;
 
-import net.thecamaras.events.CreateEditorEvent;
-import net.thecamaras.events.EditorModeEvent;
+import net.thecamaras.events.EditorEvent;
 import net.thecamaras.events.OpenEditorEvent;
 import net.thecamaras.models.Person;
 
@@ -60,8 +59,8 @@ public class AddressManagerClass extends TabNavigator
     private function creationCompleteHandler(event:FlexEvent):void
     {
         picker.addEventListener(OpenEditorEvent.OPEN_EDITOR_EVENT, openEditor);
-        picker.addEventListener(CreateEditorEvent.CREATE_EDITOR_EVENT, newEditor);
-        picker.addEventListener(EditorModeEvent.EDITOR_MODE_EVENT, changePicker);
+        picker.addEventListener(EditorEvent.EDITOR_CREATE_EVENT, newEditor);
+        picker.addEventListener(EditorEvent.LISTING_SWITCH_EVENT, changePicker);
     }
     
     private function openEditor(event:OpenEditorEvent):void
@@ -71,20 +70,20 @@ public class AddressManagerClass extends TabNavigator
             editor = new PeopleEditor();
             addChild(editor);
             this.selectedChild = editor;
-            PeopleEditor(editor).setId(event.model.@id);    
+            PeopleEditor(editor).init(event.model.@id);    
         }
         else{
             editor = new PlaceEditor();
             addChild(editor);
             this.selectedChild = editor;
-            PlaceEditor(editor).setId(event.model.@id); 
+            PlaceEditor(editor).init(event.model.@id); 
         }
     }
     
-    private function newEditor(e:CreateEditorEvent):void
+    private function newEditor(event:EditorEvent):void
     {
         var editor:Container;
-        if (e.mode == Person.PERSON_TYPE){
+        if (event.mode == Person.PERSON_TYPE){
             editor = new PeopleEditor();
         }
         else{
@@ -94,7 +93,7 @@ public class AddressManagerClass extends TabNavigator
         this.selectedChild = editor;
     }
     
-    private function changePicker(event:EditorModeEvent):void
+    private function changePicker(event:EditorEvent):void
     {
         removeChild(picker);
         if (event.mode == Person.PERSON_TYPE)
@@ -109,6 +108,7 @@ public class AddressManagerClass extends TabNavigator
         }
         addChildAt(picker, 0);
         creationCompleteHandler(null);
+        selectedChild = picker;
     }
 }
 }

@@ -44,8 +44,8 @@
                 childText = "Possible Addresses";
             }
 
-            override public function setId (id:int):void{
-                super.setId(id);
+            override public function init (id:int):void{
+                super.init(id);
                 var args:Object = new Object();
                 args.method = "Person";
                 args.id = id;

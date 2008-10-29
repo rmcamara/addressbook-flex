@@ -41,8 +41,8 @@
                 childText = "People At Location";
             }
 
-            override public function setId (id:int):void{
-                super.setId(id);
+            override public function init (id:int):void{
+                super.init(id);
                 var args:Object = new Object();
                 args.method = "Place";
                 args.id = id;

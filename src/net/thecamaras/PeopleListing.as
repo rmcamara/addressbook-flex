@@ -7,7 +7,7 @@ import mx.events.FlexEvent;
 import mx.formatters.DateFormatter;
 import mx.utils.ObjectUtil;
 
-import net.thecamaras.events.CreateEditorEvent;
+import net.thecamaras.events.EditorEvent;
 import net.thecamaras.models.Person;
 
     
@@ -74,7 +74,7 @@ public class PeopleListing extends AbstractListing
     
     override protected function newItemRequest(event:Event):void
     {
-        dispatchEvent(new CreateEditorEvent(TYPE_PERSON));
+        dispatchEvent(new EditorEvent(EditorEvent.EDITOR_CREATE_EVENT, TYPE_PERSON));
     }
     
     override protected function displayName(item:Object, column:AdvancedDataGridColumn):String

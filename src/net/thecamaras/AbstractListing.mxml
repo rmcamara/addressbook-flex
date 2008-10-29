@@ -7,7 +7,6 @@
     paddingLeft="10" paddingRight="10" >
     <mx:Script>
         <![CDATA[
-            import net.thecamaras.events.EditorModeEvent;
             import mx.core.ScrollPolicy;
         ]]>
     </mx:Script>
@@ -43,7 +42,8 @@
     
     <mx:AdvancedDataGrid id="listingTable"
         width="100%" height="90%" horizontalScrollPolicy="{ScrollPolicy.OFF}"
-        designViewDataType="tree" rowHeight="20"
+        designViewDataType="tree" rowHeight="20" 
+        horizontalGridLines="true" horizontalGridLineColor="#DDDDDD"
         dataProvider="{modelList}"
         alternatingItemColors="{altColors}" textAlign="left"
         groupIconFunction="groupIconChooser" iconFunction="iconChooser"

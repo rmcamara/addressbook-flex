@@ -14,7 +14,7 @@ import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 import mx.events.FlexEvent;
 import mx.utils.ObjectUtil;
 
-import net.thecamaras.events.EditorModeEvent;
+import net.thecamaras.events.EditorEvent;
 import net.thecamaras.events.OpenEditorEvent;
 import net.thecamaras.models.Person;
 import net.thecamaras.models.Place;
@@ -235,7 +235,7 @@ public class AbstractListingClass extends VBox
     
     protected function switchMode_clickHandler():void
     {
-        dispatchEvent(new EditorModeEvent(mode));
+        dispatchEvent(new EditorEvent(EditorEvent.LISTING_SWITCH_EVENT, mode));
     }
 }
 }
