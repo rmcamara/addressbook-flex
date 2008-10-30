@@ -21,124 +21,238 @@
 
 package net.thecamaras.models
 {
-    import mx.formatters.PhoneFormatter;
-    import mx.formatters.ZipCodeFormatter;
+
+import mx.formatters.PhoneFormatter;
+import mx.formatters.ZipCodeFormatter;
+
+// -----------------------------------------------------------------------------
+//
+//  MetaData
+//
+// -----------------------------------------------------------------------------
+
+/**
+ * A class that represents a physical location. It is popualted by an xml object. 
+ * 
+ * @author Ross Camara
+ * 
+ */
+public class Place extends BaseModel
+{   
+    // -------------------------------------------------------------------------
+    //  Static methods/constants
+    // -------------------------------------------------------------------------
+    /** String Constant used to identiy a Place. */
+    public static const PLACE_TYPE:String = "Place";
+
+    /** Formatter to handle zipcodes. */    
+    public static var ZIPCODE_FORMATER:ZipCodeFormatter = new ZipCodeFormatter();
     
-    public class Place extends BaseModel{   
-        public static const PLACE_TYPE:String = "Place";
-            
-        private var _name:String;
-        private var _address:String;
-        private var _address2:String;
-        private var _city:String;
-        private var _state:String;
-        private var _zipcode:String;
-        private var _phone:uint;
-        private var _details:String;
+    // -------------------------------------------------------------------------
+    //  Constructor
+    // -------------------------------------------------------------------------
+    /**
+     * Create a new Place model. 
+     *  
+     * @param root XML source. 
+     */
+    public function Place(root:XML)
+    {
+        super(root);
+        if (root == null) { return; }
         
-        public static var TELEPHONE_FORMATER:PhoneFormatter = new PhoneFormatter();
-        TELEPHONE_FORMATER.formatString = "(###) ###-####";
-        
-        public static var ZIPCODE_FORMATER:ZipCodeFormatter = new ZipCodeFormatter();
-        
-        public function Place(root:XML){
-            super(root);
-            if (root == null) { return; }
-            
-            this._name = String(root.@name);
-            this._address = String(root.@address);
-            this._address2 = String(root.@address2);
-            this._city = String(root.@city);
-            this._state = String(root.@state);
-            this._zipcode = String(root.@zipcode);
-            this._phone = parseInt(root.@phone);
-            this._details = String(root.@details);
-        }
-        
-        override public function toObject():Object{
-            var result:Object = super.toObject();
-            return result;
-        }
-        
-        /** Getters for place properties. */
-        [Bindable]
-        public function get name():String {
-            return _name;
-        }
-        
-        [Bindable]
-        public function get address():String{
-            return _address;
-        }
-        
-        [Bindable]
-        public function get address2():String{
-            return _address2;    
-        }
-        
-        [Bindable]
-        public function get city():String{
-            return _city;    
-        }
-        
-        [Bindable]
-        public function get state():String{
-            return _state;    
-        }
-        
-        [Bindable]
-        public function get zipcode():String{
-            return ZIPCODE_FORMATER.format(_zipcode);
-        }
-        
-        [Bindable]
-        public function get phone():String{
-            return TELEPHONE_FORMATER.format(_phone);    
-        }
-        
-        [Bindable]
-        public function get details():String{
-            return _details;    
-        }
-        
-        public function set name(arg:String):void {
-            this._name = arg;
-            this.dirty = true;
-        }
-        
-        public function set address(arg:String):void{
-            this._address = arg;
-            this.dirty = true;
-        }
-        
-        public function set address2(arg:String):void{
-            this._address2 = arg;
-            this.dirty = true;
-        }
-        
-        public function set city(arg:String):void{
-            this._city = arg;
-            this.dirty = true;
-        }
-        
-        public function set state(arg:String):void{
-            this._state = arg;
-            this.dirty = true;
-        }
-        
-        public function set zipcode(arg:String):void{
-            this._zipcode = arg;
-            this.dirty = true;
-        }
-        
-        public function set phone(arg:String):void{
-            this._phone = parseInt(arg);
-            this.dirty = true;
-        }
-        
-        public function set details(arg:String):void{
-            this._details = arg;
-            this.dirty = true;
-        }
+        this._name = String(root.@name);
+        this._address = String(root.@address);
+        this._address2 = String(root.@address2);
+        this._city = String(root.@city);
+        this._state = String(root.@state);
+        this._zipcode = String(root.@zipcode);
+        this._phone = parseInt(root.@phone);
     }
+    
+    // -------------------------------------------------------------------------
+    // 
+    //  Variables
+    //
+    // -------------------------------------------------------------------------
+    /** Location name. */
+    private var _name:String;
+    
+    /** First line of address. */
+    private var _address:String;
+    
+    /** Optional second address line. */
+    private var _address2:String;
+    
+    /** City. */
+    private var _city:String;
+    
+    /** State. */
+    private var _state:String;
+    
+    /** Zipcode. */
+    private var _zipcode:String;
+    
+    /** Home phone number. */
+    private var _phone:uint;
+    
+    // -------------------------------------------------------------------------
+    // 
+    //  Properties
+    //
+    // -------------------------------------------------------------------------
+    /**
+     * Gets the name.
+     *  
+     * @return name.
+     */
+    [Bindable]
+    public function get name():String 
+    {
+        return _name;
+    }
+    
+    /**
+     * Sets the name.
+     * 
+     * @param value name. 
+     */
+    public function set name(value:String):void 
+    {
+        this._name = value;
+        this.dirty = true;
+    }
+    
+    /**
+     * Gets the address.
+     *  
+     * @return address.
+     */
+    [Bindable]
+    public function get address():String
+    {
+        return _address;
+    }
+    
+    /**
+     * Sets the address.
+     * 
+     * @param value address. 
+     */
+    public function set address(value:String):void
+    {
+        this._address = value;
+        this.dirty = true;
+    }
+    
+    /**
+     * Gets the optional second line of the address.
+     *  
+     * @return address 2nd line.
+     */
+    [Bindable]
+    public function get address2():String
+    {
+        return _address2;    
+    }
+    
+    /**
+     * Sets the address2.
+     * 
+     * @param value address2. 
+     */
+    public function set address2(value:String):void
+    {
+        this._address2 = value;
+        this.dirty = true;
+    }
+    
+    /**
+     * Gets the city.
+     *  
+     * @return city.
+     */
+    [Bindable]
+    public function get city():String
+    {
+        return _city;    
+    }
+    
+    /**
+     * Sets the city.
+     * 
+     * @param value city. 
+     */
+    public function set city(value:String):void
+    {
+        this._city = value;
+        this.dirty = true;
+    }
+    
+    /**
+     * Gets the State.
+     *  
+     * @return state.
+     */
+    [Bindable]
+    public function get state():String
+    {
+        return _state;    
+    }
+    
+    /**
+     * Sets the state.
+     * 
+     * @param value state. 
+     */
+    public function set state(value:String):void
+    {
+        this._state = value;
+        this.dirty = true;
+    }
+    
+    /**
+     * Gets the zipcode.
+     *  
+     * @return zipcode.
+     */
+    [Bindable]
+    public function get zipcode():String
+    {
+        return ZIPCODE_FORMATER.format(_zipcode);
+    }
+    
+    /**
+     * Sets the zipcode.
+     * 
+     * @param value zipcode. 
+     */
+    public function set zipcode(value:String):void
+    {
+        this._zipcode = value;
+        this.dirty = true;
+    }
+    
+    /**
+     * Gets the phone number.
+     *  
+     * @return phone number.
+     */
+    [Bindable]
+    public function get phone():String
+    {
+        return PHONE_FORMATER.format(_phone);    
+    }
+    
+    /**
+     * Sets the phone number.
+     * 
+     * @param value phone number. 
+     */
+    public function set phone(value:String):void
+    {
+        this._phone = parseInt(value);
+        this.dirty = true;
+    }
+}
 }
