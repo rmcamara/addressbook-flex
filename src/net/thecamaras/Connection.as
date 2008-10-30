@@ -22,31 +22,35 @@
 package net.thecamaras
 {
 	import mx.controls.Alert;
+	import mx.core.Application;
 	import mx.messaging.messages.IMessage;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService;
 	
 	public class Connection
-	{
-		public static const SERVER:String = "localhost";
-		
+	{	
 		private static var _instance:Connection;
 		
 		public static function get instance():Connection{
 		    if (_instance == null)
 		    {
-		        _instance = new Connection();
+		        _instance = new Connection(Application.application.loaderInfo.url);
 		    }
 			return _instance;
 		}
 		
 		private var connection:HTTPService = null;
 		
-		public function Connection(){
+		public function Connection(rootURL:String){
+			var lastForwardSlashIndex:int = rootURL.lastIndexOf("/");
+            var lastBackSlashIndex:int = rootURL.lastIndexOf("\\");
+            rootURL = rootURL.slice(0,Math.max(lastForwardSlashIndex, lastBackSlashIndex) + 1);
+			
+			
 			this.connection = new HTTPService();
 			this.connection.resultFormat = HTTPService.RESULT_FORMAT_E4X;
-			this.connection.rootURL = "http://"+Connection.SERVER + "/addressbook/service/";
+			this.connection.rootURL = rootURL + "/service/";
 		}
 
 		private static function displayError(event:FaultEvent):void {
