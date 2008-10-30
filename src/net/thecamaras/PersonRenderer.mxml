@@ -72,7 +72,7 @@
                 }
                 
                 if (source.@cell != ""){
-                    results += "Cell: " + Person.PHONE_DISPLAY_FORMATER.format(source.@cell) + NEWLINE;
+                    results += "Cell: " + BaseModel.PHONE_FORMATER.format(source.@cell) + NEWLINE;
                     linecount++;
                 }
                 
