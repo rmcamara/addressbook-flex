@@ -18,27 +18,81 @@
 //    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-
 package net.thecamaras.events
 {
-    import flash.events.Event;
+    
+import flash.events.Event;
 
-    public class EditorEvent extends Event
+import net.thecamaras.models.Person;
+import net.thecamaras.models.Place;
+
+// -----------------------------------------------------------------------------
+//
+//  MetaData
+//
+// -----------------------------------------------------------------------------
+
+/**
+ * Generic address type event. Contains a property indicating if this was based 
+ * on a Place or a Person.
+ * 
+ * @author Ross Camara 
+ */
+public class EditorEvent extends Event
+{
+    // -------------------------------------------------------------------------
+    //  Static methods/constants
+    // -------------------------------------------------------------------------
+    /** Event type used to indicate that the picker needs to switch modes. */
+    public static const LISTING_SWITCH_EVENT:String = "SwitchPicker";
+    
+    /** Event type used to request a new Person/Place. */
+    public static const EDITOR_CREATE_EVENT:String = "CreateEditor";
+    
+    /** Constant used for person based events. */
+    public static const PERSON:String = Person.PERSON_TYPE;
+    
+    /** Constant used for location based events. */
+    public static const LOCATION:String = Place.PLACE_TYPE;
+    
+    // -------------------------------------------------------------------------
+    //  Constructor
+    // -------------------------------------------------------------------------
+    /**
+     * 
+     * @param type Event type
+     * @param mode person or place based. 
+     * @param bubbles 
+     * @param cancelable
+     * 
+     */
+    public function EditorEvent(type:String, mode:String, 
+                                bubbles:Boolean=false, cancelable:Boolean=false)
     {
-        public static const LISTING_SWITCH_EVENT:String = "SwitchPicker";
-        public static const EDITOR_CREATE_EVENT:String = "CreateEditor";
-        
-        private var _mode:String;
-        
-        public function EditorEvent(type:String, mode:String, bubbles:Boolean=false, cancelable:Boolean=false){
-            super(type, bubbles, cancelable);
-            this._mode = mode;
-        }
-        
-        public function get mode():String
-        {
-            return _mode;
-        }
+        super(type, bubbles, cancelable);
+        this._mode = mode;
     }
+    
+    // -------------------------------------------------------------------------
+    // 
+    //  Variables
+    //
+    // -------------------------------------------------------------------------
+    private var _mode:String;
+    
+    // -------------------------------------------------------------------------
+    // 
+    //  Properties
+    //
+    // -------------------------------------------------------------------------
+    /**
+     * Gets the mode of the event. 
+     * 
+     * @return the mode 
+     */
+    public function get mode():String
+    {
+        return _mode;
+    }
+}
 }

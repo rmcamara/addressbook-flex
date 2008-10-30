@@ -18,25 +18,70 @@
 //    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 package net.thecamaras.events
 {
-    import flash.events.Event;
+import flash.events.Event;
 
-    public class OpenEditorEvent extends Event
+// -----------------------------------------------------------------------------
+//
+//  MetaData
+//
+// -----------------------------------------------------------------------------
+
+/**
+ * A flex event used to trigger the opening of a new editor. 
+ * 
+ * @author Ross Camara
+ */
+public class OpenEditorEvent extends Event
+{
+    // -------------------------------------------------------------------------
+    //  Static methods/constants
+    // -------------------------------------------------------------------------
+    
+    public static const OPEN_EDITOR_EVENT:String = "EditorEvent";
+    
+    // -------------------------------------------------------------------------
+    //  Constructor
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Create a new instance of the OpenEditorEvent.
+     * 
+     * @param model XML encoding of the model to be opened. 
+     * @param bubbles
+     * @param cancelable
+     * 
+     */
+    public function OpenEditorEvent(model:XML, bubbles:Boolean=false, cancelable:Boolean=false)
     {
-        public static const OPEN_EDITOR_EVENT:String = "EditorEvent";
-        
-        /** The XML Model that should be opened. */
-        private var _xml:XML;
-        
-        public function OpenEditorEvent(model:XML, bubbles:Boolean=false, cancelable:Boolean=false){
-            super(OPEN_EDITOR_EVENT, bubbles, cancelable);
-            this._xml = model;
-        }
-        
-        public function get model ():XML{
-            return _xml;
-        }
+        super(OPEN_EDITOR_EVENT, bubbles, cancelable);
+        this._xml = model;
     }
+    
+    // -------------------------------------------------------------------------
+    // 
+    //  Variables
+    //
+    // -------------------------------------------------------------------------
+    /** The XML Model that should be opened. */
+    private var _xml:XML;
+    
+    
+    // -------------------------------------------------------------------------
+    // 
+    //  Properties
+    //
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Gets the XML model.
+     * 
+     * @return the xml.
+     */
+    public function get model ():XML
+    {
+        return _xml;
+    }
+}
 }
