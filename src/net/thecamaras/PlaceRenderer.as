@@ -27,7 +27,7 @@ import mx.binding.utils.BindingUtils;
 import mx.controls.Text;
 import mx.events.FlexEvent;
 
-import net.thecamaras.models.Person;
+import net.thecamaras.models.BaseModel;
 
     
 // -----------------------------------------------------------------------------
@@ -104,7 +104,7 @@ public class PlaceRenderer extends Text
         linecount++;
         if (source.@phone != "")
         {
-            results += Person.PHONE_DISPLAY_FORMATER.format(source.@phone)
+            results += BaseModel.PHONE_FORMATER.format(source.@phone)
             linecount++; 
         }
 

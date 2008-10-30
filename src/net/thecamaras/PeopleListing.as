@@ -120,7 +120,7 @@ public class PeopleListing extends AbstractListing
             return "";
         }
     
-        return Person.PHONE_FORMATER.format(xml.@cell);
+        return Person.PARSE_PHONE_FORMATER.format(xml.@cell);
     }
 
     
